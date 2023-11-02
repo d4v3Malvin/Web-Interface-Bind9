@@ -1,5 +1,44 @@
 require('dotenv').config()
 
+<<<<<<< HEAD
+=======
+
+// function runcommand(command) {
+
+//     let resultjson = {}
+
+//     let stat = "none"
+//     let text = ""
+
+//     return new Promise((resolve,reject) => {
+//         executessh(command).then((result) => {
+
+//             if (result.code == 0){ 
+//                 stat = "Success"
+//                 text = result.Result
+//             }
+//             else if (result.code == 1) {
+//                 stat = "Failed"
+//                 text = result.Errormsg
+//             }
+    
+//             resultjson = {
+//                 code: result.code,
+//                 status: stat,
+//                 command: command ,
+//                 msg: text
+//             }
+
+//             resolve(resultjson)
+
+//         }).catch((err) => {
+//             console.error(err)
+//             reject(err)
+//         })
+//     })
+// }
+
+>>>>>>> e4238d0d1af2f69e80b7aa5789510f0f996993b7
 module.exports = function (app) {
     app.get('/', (req,res) => {
         res.send("hello")
@@ -16,10 +55,13 @@ module.exports = function (app) {
         })
     })
 
+<<<<<<< HEAD
     app.get('/list-dns-block', (req,res) => {
         
     })
 
+=======
+>>>>>>> e4238d0d1af2f69e80b7aa5789510f0f996993b7
     // app.get('/stream-log', (req,res) => {
     //     const child = spawn('cat',['/home/go_malvin/dns_log'])
 

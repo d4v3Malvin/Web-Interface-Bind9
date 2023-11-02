@@ -1,15 +1,35 @@
 # Dockerfile for bind dns rpz.
 # use official ubuntu Image
+<<<<<<< HEAD
 FROM node:18-slim
 
 # Set metadata
 LABEL maintainer="dm.enterprienur@gmail.com"
 LABEL description="Docker Container for Bind9 with setup RPZ and the backend for bind9"
+=======
+FROM ubuntu:latest
+
+# Set metadata
+LABEL maintainer="dm.enterprienur@gmail.com"
+LABEL description="Docker Container for Bind9 with setup RPZ"
+>>>>>>> e4238d0d1af2f69e80b7aa5789510f0f996993b7
 
 # Install Bind9
 
 RUN apt-get update \
+<<<<<<< HEAD
   && apt-get install -y bind9 
+=======
+  && apt-get install -y bind9 ca-certificates curl gnupg
+
+RUN mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+  && NODE_MAJOR=20 \
+  && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+
+RUN apt-get update \
+  && apt-get install nodejs -y
+>>>>>>> e4238d0d1af2f69e80b7aa5789510f0f996993b7
 
 # Expose necessary ports
 EXPOSE 53/udp 53/tcp 3000
