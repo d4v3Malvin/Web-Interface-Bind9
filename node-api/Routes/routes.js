@@ -1,41 +1,5 @@
 require('dotenv').config()
 
-
-// function runcommand(command) {
-
-//     let resultjson = {}
-
-//     let stat = "none"
-//     let text = ""
-
-//     return new Promise((resolve,reject) => {
-//         executessh(command).then((result) => {
-
-//             if (result.code == 0){ 
-//                 stat = "Success"
-//                 text = result.Result
-//             }
-//             else if (result.code == 1) {
-//                 stat = "Failed"
-//                 text = result.Errormsg
-//             }
-    
-//             resultjson = {
-//                 code: result.code,
-//                 status: stat,
-//                 command: command ,
-//                 msg: text
-//             }
-
-//             resolve(resultjson)
-
-//         }).catch((err) => {
-//             console.error(err)
-//             reject(err)
-//         })
-//     })
-// }
-
 module.exports = function (app) {
     app.get('/', (req,res) => {
         res.send("hello")
@@ -50,6 +14,10 @@ module.exports = function (app) {
                 res.status.send(500).send(err)
             }
         })
+    })
+
+    app.get('/list-dns-block', (req,res) => {
+        
     })
 
     // app.get('/stream-log', (req,res) => {
