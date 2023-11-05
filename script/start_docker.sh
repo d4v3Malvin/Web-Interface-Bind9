@@ -10,4 +10,8 @@ node server.js &
 
 touch dns-log
 
+cp /etc/bind/db.empty /etc/bind/db.ads.rpz 
+
+cp /etc/bind/db.empty /etc/bind/db.blocked.rpz
+
 /usr/sbin/named -c /etc/bind/named.conf -u bind -f

@@ -19,11 +19,11 @@ WORKDIR /etc/bind
 # Copy the setup configuration
 COPY bind-conf/named.conf.options named.conf.options
 
-# Make RPZ ads Zone
-COPY bind-conf/db.example db.ads.rpz
+# # Make RPZ ads Zone
+# COPY bind-conf/db.example db.ads.rpz
 
-# Make RPZ blocked Zone
-COPY bind-conf/db.example db.blocked.rpz
+# # Make RPZ blocked Zone
+# COPY bind-conf/db.example db.blocked.rpz
 
 # Make directory for Bind Log
 RUN mkdir -p /var/log/bind
