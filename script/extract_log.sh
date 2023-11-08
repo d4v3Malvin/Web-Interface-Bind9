@@ -1,6 +1,5 @@
 #!/bin/bash
 
-file=''
 outputsfile=$1
 
 extract () {

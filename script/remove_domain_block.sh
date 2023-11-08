@@ -4,7 +4,7 @@ path=$1
 
 pattern=$2
 
-sudo sh -c "sed -i '/$pattern/d' $1"
+sh -c "sed -i '/$pattern/d' $1"
 
 file_contents=$(cat $path)
 
