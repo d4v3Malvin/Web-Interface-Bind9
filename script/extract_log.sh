@@ -5,6 +5,7 @@ outputsfile=$1
 extract () {
 	file='/var/log/bind/temp_query.log'
 	while read line; do
+		sh -c "sed -i \"/$line/d\" /var/log/bind/query.log"
 		date=$( echo $line | cut -d " " -f 1 )
 		type_log=$( echo $line | cut -d " " -f 3 | cut -d ":" -f 1)
 		client=$( echo $line | cut -d " " -f 7 | cut -d "#" -f 1 )
@@ -32,4 +33,4 @@ extract
 
 rm /var/log/bind/temp_query.log
 
-truncate -s 0 /var/log/bind/query.log
+rndc reload

@@ -1,4 +1,5 @@
 require('dotenv').config()
+const { spawn } = require("child_process")
 
 module.exports = function (app) {
     app.get('/', (req,res) => {
@@ -17,7 +18,19 @@ module.exports = function (app) {
     })
 
     app.get('/list-dns-block', (req,res) => {
-        
+        const process = spawn('/home/webScript/list_blocked_domain.sh')
+        let output = '';
+        process.stdout.on('data',(data) => {
+            res.json(data.toString())
+        })
+    })
+
+    app.get('/get-dns-traffic', (req,res) => {
+        // /home/webScript/extract_log.sh /home/back_api/dns-log
+        const process = spawn('/home/webScript/extract_log.sh', ['/home/back_api/dns-log'])
+        process.stdout.on('end', (data) => {
+            res.json("log sudah diambil")
+        })
     })
 
     // app.get('/stream-log', (req,res) => {
