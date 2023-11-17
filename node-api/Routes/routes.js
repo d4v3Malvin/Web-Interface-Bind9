@@ -19,52 +19,64 @@ module.exports = function (app) {
 
     app.get('/list-dns-block', (req,res) => {
         const process = spawn('/home/webScript/list_blocked_domain.sh')
-        let output = '';
         process.stdout.on('data',(data) => {
             res.json(data.toString())
         })
     })
 
     app.get('/get-dns-traffic', (req,res) => {
-        // /home/webScript/extract_log.sh /home/back_api/dns-log
         const process = spawn('/home/webScript/extract_log.sh', ['/home/back_api/dns-log'])
         process.stdout.on('end', (data) => {
             res.json("log sudah diambil")
         })
     })
 
-    // app.get('/stream-log', (req,res) => {
-    //     const child = spawn('cat',['/home/go_malvin/dns_log'])
+    app.get('/get-dns-cache', (req,res) => {
+        let datalist = ""
+        const process = spawn('/home/webScript/extract_dns_cache.sh')
 
-    //     let output = '';
-    //     child.stdout.on('data', (data) => {
-    //         output += data.toString();
-    //     });
+        let ifdomain = ""
 
-    //     child.stdout.on('end', () => {
-    //         res.json(output);
-    //     });
-    // })
+        process.stdout.on('data', (data) => {
+            datalist = data.toString()
+            const separatedstring = datalist.split("\n")
+            let jsonmessage = {}
 
-    // app.get('/execute', async (req,res) => {
-    //     // contoh curl : localhost:3000/execute?command=ls%20-l (%20 adalah spasi)
-    //     // url untuk request log : localhost:3000/execute?command=./script/extract_log.sh%20/var/log/bind/query.log
-    //     try {
-    //         const command = req.query.command
+            for (const value of separatedstring){
+                if (value.toString().length > 0){
+                    let valuereplaced = value.replace(/\t/g," ")
+                    let arrayofvalue = valuereplaced.toString().split(' ')
+                    let first = arrayofvalue[0].toString()
+                    let address = ""
+                    let requestType = ""
+                    let ttl = ""
 
-    //         if (command.trim().length == 0){
-    //             res.status(401).send('Command Cant be Empty')
-    //         }
-    //         else{
+                    if(isNaN(first)){
+                        ifdomain = first
+                        ttl = arrayofvalue[1].toString()
+                        requestType = arrayofvalue[2].toString()
+                        address = arrayofvalue[3].toString()
+                    }
+                    else{
+                        ttl = arrayofvalue[0].toString()
+                        requestType = arrayofvalue[1].toString()
+                        if (requestType == "HTTPS"){
+                            address = arrayofvalue[5].split('=')[1]
+                        }
+                        else{
+                            address = arrayofvalue[2].toString()
+                        }
+                    }
+                    
+                    // console.log("start with : " + ifdomain)
+                    // console.log("value : " + value.toString())
+                    console.log(ifdomain + " " + ttl + " " + requestType + " " + address)
+                }
+            }
+        })
 
-    //             const result = await runcommand(command);
-
-    //             res.json(result)
-
-    //         }
-    //     }
-    //     catch(err) {
-    //         res.status(500).send('Error While Executing Command')
-    //     }
-    // })
+        process.stdout.on('end', (data) => {
+            res.json("test done")
+        })
+    })
 }
