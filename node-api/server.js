@@ -13,8 +13,10 @@ app.use(cors())
 
 require('./Routes/routes') (app);
 
-wss.on('connection', (ws) => {
-    console.log('Client Connected')
+wss.on('connection', (ws,req) => {
+    const ip = req.socket.remoteAddress
+
+    console.log(`Client ${ip} Connected / Reconnect`)
 
     let output = ''
 

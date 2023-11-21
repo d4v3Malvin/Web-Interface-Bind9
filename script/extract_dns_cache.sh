@@ -13,5 +13,3 @@ while read line; do
     echo "$line" | awk '$3 ~ /A|AAAA|CNAME|HTTPS|NS.?st / && $2 !~ /IN|RRSIG/ {print}' | sed -e '/^;/d' | awk '$1 !~ /example.org/'
     echo "$line" | awk '$2 ~ /A|AAAA|CNAME|HTTPS|NS/ {print}' | sed -e '/^;/d' | awk '$1 !~ /example.org/'
 done < $filename
-
-# grep -E 'A|AAAA' $filename | awk '{print $1, $3, $4}' | sed -e '/^;/d'
