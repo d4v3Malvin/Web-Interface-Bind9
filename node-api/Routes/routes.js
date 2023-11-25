@@ -47,7 +47,6 @@ module.exports = function (app) {
             if (value.toString().length > 0){
                 let valuereplaced = value.replace(/\t/g," ")
                 valuereplaced = valuereplaced.replace("  "," ")
-                console.log(valuereplaced)
                 let arrayofvalue = valuereplaced.toString().split(' ')
                 let first = arrayofvalue[0].toString()
                 let address = ""
@@ -90,5 +89,10 @@ module.exports = function (app) {
 
         res.json(jsonmessage)
 
+    })
+
+    app.get('/flush-cache', (req,res) => {
+        const cachelist = execSync('rndc flush')
+        res.send("cache sudah terhapus")
     })
 }
