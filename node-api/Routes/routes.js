@@ -46,6 +46,8 @@ module.exports = function (app) {
         for (const value of separatedstring){
             if (value.toString().length > 0){
                 let valuereplaced = value.replace(/\t/g," ")
+                valuereplaced = valuereplaced.replace("  "," ")
+                console.log(valuereplaced)
                 let arrayofvalue = valuereplaced.toString().split(' ')
                 let first = arrayofvalue[0].toString()
                 let address = ""
