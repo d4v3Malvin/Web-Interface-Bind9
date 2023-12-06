@@ -18,15 +18,30 @@ wss.on('connection', (ws,req) => {
 
     console.log(`Client ${ip} Connected / Reconnect`)
 
-    let output = ''
+    let json_message = []
 
     const fileStream = fs.createReadStream(process.env.LOG_PATH);
     fileStream.on('data', (data) => {
-        output += data.toString()
+        list_data = data.toString()
+        let object = list_data.split('|')
+
+        for(const value of object){
+            let object = value.split(',')
+            let log = {
+                type: object[0].replace('\n',''),
+                date: object[1],
+                time: object[2],
+                ip_source: object[3],
+                domain: object[4],
+                dns_type: object[5],
+                note: object[6] || 'none'
+            }
+            json_message.push(log)
+        }
     });
 
     fileStream.on('end', () => {
-        ws.send(output);
+        ws.send(JSON.stringify(json_message));
     })
     
 })

@@ -79,7 +79,6 @@ module.exports = function (app) {
 
                 jsonmessage.cache.push(jsonsatuan)
                 
-                //console.log(ifdomain + " " + ttl + " " + requestType + " " + address)
             }
         }
 
@@ -88,7 +87,6 @@ module.exports = function (app) {
         jsonmessage.size = size.toString().split('\t')[0]
 
         res.json(jsonmessage)
-
     })
 
     app.get('/flush-cache', (req,res) => {
