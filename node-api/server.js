@@ -26,11 +26,35 @@ wss.on('connection', (ws,req) => {
         let object = list_data.split('|')
 
         for(const value of object){
+
             let object = value.split(',')
+
+            var months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+
+            let waktu = new String(object[2])
+            let times = waktu.split(':')
+            let tanggal = new String(object[1]).split('-')
+            let date = new Date()
+            date.setUTCMonth(months.indexOf(String(tanggal[1]).toLowerCase()),tanggal[0])
+            date.setUTCFullYear(tanggal[2])
+            date.setUTCHours(times[0],times[1],times[2])
+            let datetime = date.toLocaleDateString('ID', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'Asia/Jakarta',
+                hour12: false,
+            }).toString().split(',')
+
+            let time = String(datetime[1]).split('.')
+
             let log = {
                 type: object[0].replace('\n',''),
-                date: object[1],
-                time: object[2],
+                date: datetime[0],
+                time: time[0] + ":" + time[1] + ":" + time[2],
                 ip_source: object[3],
                 domain: object[4],
                 dns_type: object[5],

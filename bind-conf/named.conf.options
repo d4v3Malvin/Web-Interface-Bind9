@@ -18,6 +18,7 @@ options {
 	allow-query { any; };
 	forwarders {
 	    1.1.1.1;
+		8.8.8.8;
 	};
 	forward only;
 
