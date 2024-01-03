@@ -6,13 +6,22 @@ FROM node:18-slim
 LABEL maintainer="dm.enterprienur@gmail.com"
 LABEL description="Docker Container for Bind9 with setup RPZ and the backend for bind9"
 
-# Install Bind9
+RUN echo "deb https://deb.debian.org/debian/ testing main" | tee /etc/apt/sources.list.d/testing.list
+
+COPY config/dnscrypt-pinning.pref /etc/apt/preferences.d/pinning.pref
+
+# Install systemd , Bind9 & ca-certificates
 
 RUN apt-get update \
-  && apt-get install -y bind9 
+  && apt-get install -y systemd bind9 ca-certificates
+
+# Install dnsencrypt
+
+RUN apt update \
+  && apt install -y -t testing dnscrypt-proxy
 
 # Expose necessary ports
-EXPOSE 53/udp 53/tcp 3000
+EXPOSE 53/udp 53/tcp 953 3000
 
 WORKDIR /etc/bind
 

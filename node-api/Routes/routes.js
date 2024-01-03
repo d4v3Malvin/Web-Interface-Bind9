@@ -6,17 +6,6 @@ module.exports = function (app) {
         res.send("hello")
     })
 
-    // app.get('/Download/:filename', (req,res) => {
-    //     const filename = req.params.filename
-    //     const filepath = `/var/log/bind/${filename}`
-    //     res.download(filepath, (err) => {
-    //         if (err) {
-    //             console.error(err)
-    //             res.status.send(500).send(err)
-    //         }
-    //     })
-    // })
-
     app.get('/list-dns-block', (req,res) => {
         const process = spawn('/home/webScript/list_blocked_domain.sh')
         process.stdout.on('data',(data) => {
