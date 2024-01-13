@@ -14,4 +14,4 @@ sudo docker run -d --name bind9_backend -p 53:53/udp -p 53:53/tcp -p 3000:3000 b
 
 sudo systemctl start systemd-resolved.service
 
-sudo sed -i "s|nameserver .*|nameserver 192.168.0.10 |" "/etc/resolv.conf"
+sudo sed -i "s|nameserver .*|nameserver 192.168.0.6 |" "/etc/resolv.conf"
