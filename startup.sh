@@ -16,8 +16,8 @@ fi
 if ! which dnscrypt-proxy > /dev/null; then
     app+="dnscrypt-proxy "
 fi
-if [ ! $app == ""]; then 
-    apt-get update -y && apt-get install $app
+if [[ $app != "" ]]; then 
+    apt-get update -y && apt-get install $app -y 
 fi
 if [ ! -d $web_path ]; then 
     mkdir -p $web_path
@@ -35,16 +35,16 @@ fi
 # Setup BIND
 systemctl enable named
 cp bind-conf/named.conf.options /etc/bind/
-sed -i '/\/var\/cache\/bind\/ rw,/a /var/log/bind/* rw,' "/etc/apparmor.d/usr.sbin.named"
-sed -i '/\/var\/cache\/bind\/ rw,/a /var/log/bind/ rw,' "/etc/apparmor.d/usr.sbin.named"
-if [ ! -d "/var/log/bind" ]; then 
-    mkdir -p "/var/log/bind"
-    chown -R bind:bind /var/log/bind
-fi
+sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/** rw,' "/etc/apparmor.d/usr.sbin.named"
+sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/ rw,' "/etc/apparmor.d/usr.sbin.named"
 cp /etc/bind/db.empty /etc/bind/db.ads.rpz 
 cp /etc/bind/db.empty /etc/bind/db.blocked.rpz
 systemctl restart apparmor
 systemctl restart named
+if [ ! -d "/var/log/bind" ]; then 
+    mkdir -p "/var/log/bind"
+    chown -R bind:bind /var/log/bind
+fi
 # $script_path/complete_add_domain.sh db.ads.rpz doubleclick.net 
 # Setup dnscrypt-proxy
 sed -i -e "s/listen_addresses = .*/listen_addresses = \['127.0.0.1:5353'\]/" "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
