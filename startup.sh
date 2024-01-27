@@ -17,7 +17,7 @@ if ! which dnscrypt-proxy > /dev/null; then
     app+="dnscrypt-proxy "
 fi
 if [[ $app != "" ]]; then 
-    echo "Dependency installation is on progress"
+    echo "Dependency installation is on progress ..."
     apt-get update -y > /dev/null && apt-get install $app -y > /dev/null
     echo "Installation done"
 fi
@@ -36,13 +36,14 @@ if [ ! -f "$script_path/dns-log" ]; then
 fi
 # Setup BIND
 systemctl enable named > /dev/null 2>&1
-cp bind-conf/named.conf.options /etc/bind/
+cp Backend/bind-conf/named.conf.options /etc/bind/
 sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/** rw,' "/etc/apparmor.d/usr.sbin.named"
 sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/ rw,' "/etc/apparmor.d/usr.sbin.named"
 cp /etc/bind/db.empty /etc/bind/db.ads.rpz 
 cp /etc/bind/db.empty /etc/bind/db.blocked.rpz
 systemctl restart apparmor
 systemctl restart named
+echo "Creating DNS log directory ..."
 if [ ! -d "/var/log/bind" ]; then 
     mkdir -p "/var/log/bind"
 fi
@@ -51,22 +52,27 @@ if [ -d "/var/log/bind" ]; then
         chown -R bind:bind /var/log/bind
     fi
 fi
+echo "Finished DNS log directory"
 # $script_path/complete_add_domain.sh db.ads.rpz doubleclick.net 
 # Setup dnscrypt-proxy
+echo "Setting up dnscrypt-proxy"
 sed -i -e "s/listen_addresses = .*/listen_addresses = \['127.0.0.1:5353'\]/" "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
 sed -i -e "s/server_names = .*/server_names = \['cloudflare'\]/" "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
 systemctl restart dnscrypt-proxy
+echo "Dnscrypt-proxy setup finished"
 # Setup Node_API
-cp -r node-api/* $web_path
-cp -r script/* $script_path
+echo "Setting up API Server ..."
+cp -r Backend/node-api/* $web_path
+cp -r Backend/script/* $script_path
 cp $web_path/example.env $web_path/.env
-cp config/node_api.service /lib/systemd/system/
+cp Backend/config/node_api.service /lib/systemd/system/
 sed -i -e "s|LOG_PATH='.*'|LOG_PATH='/root/dns-log'|" "$web_path/.env"
 chmod +x $script_path/*
 cd $web_path
-echo "Installing NPM Package"
+echo "Installing NPM Package ..."
 npm install -q > /dev/null 2>&1
 echo "NPM Installation done"
 systemctl daemon-reload
 systemctl start node_api
 systemctl enable node_api
+echo "API Server setup finished"
