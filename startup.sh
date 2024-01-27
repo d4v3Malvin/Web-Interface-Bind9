@@ -43,7 +43,11 @@ systemctl restart apparmor
 systemctl restart named
 if [ ! -d "/var/log/bind" ]; then 
     mkdir -p "/var/log/bind"
-    chown -R bind:bind /var/log/bind
+fi
+if [ -d "/var/log/bind" ]; then
+    if [ "$(stat -c '%U' "$directory")" = "bind" ]; then
+        chown -R bind:bind /var/log/bind
+    fi
 fi
 # $script_path/complete_add_domain.sh db.ads.rpz doubleclick.net 
 # Setup dnscrypt-proxy
