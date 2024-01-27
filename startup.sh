@@ -17,7 +17,9 @@ if ! which dnscrypt-proxy > /dev/null; then
     app+="dnscrypt-proxy "
 fi
 if [[ $app != "" ]]; then 
-    apt-get update -y && apt-get install $app -y 
+    echo "Dependency installation is on progress"
+    apt-get update -y > /dev/null && apt-get install $app -y > /dev/null
+    echo "Installation done"
 fi
 if [ ! -d $web_path ]; then 
     mkdir -p $web_path
@@ -33,7 +35,7 @@ if [ ! -f "$script_path/dns-log" ]; then
     touch $script_path/dns-log
 fi
 # Setup BIND
-systemctl enable named
+systemctl enable named > /dev/null 2>&1
 cp bind-conf/named.conf.options /etc/bind/
 sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/** rw,' "/etc/apparmor.d/usr.sbin.named"
 sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/ rw,' "/etc/apparmor.d/usr.sbin.named"
@@ -45,7 +47,7 @@ if [ ! -d "/var/log/bind" ]; then
     mkdir -p "/var/log/bind"
 fi
 if [ -d "/var/log/bind" ]; then
-    if [ "$(stat -c '%U' "$directory")" != "bind" ]; then
+    if [ "$(stat -c '%U' "/var/log/bind")" != "bind" ]; then
         chown -R bind:bind /var/log/bind
     fi
 fi
@@ -62,7 +64,9 @@ cp config/node_api.service /lib/systemd/system/
 sed -i -e "s|LOG_PATH='.*'|LOG_PATH='/root/dns-log'|" "$web_path/.env"
 chmod +x $script_path/*
 cd $web_path
-npm install
+echo "Installing NPM Package"
+npm install -q > /dev/null 2>&1
+echo "NPM Installation done"
 systemctl daemon-reload
 systemctl start node_api
 systemctl enable node_api
