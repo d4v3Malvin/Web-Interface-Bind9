@@ -5,7 +5,8 @@ script_path="/home/webScript"
 app=""
 
 if ! which node >/dev/null; then
-    app+="nodejs "
+    curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
+    sudo apt-get install -y nodejs
 fi
 if ! which npm >/dev/null; then
     app+="npm "
