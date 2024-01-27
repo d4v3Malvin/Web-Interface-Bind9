@@ -45,7 +45,7 @@ if [ ! -d "/var/log/bind" ]; then
     mkdir -p "/var/log/bind"
 fi
 if [ -d "/var/log/bind" ]; then
-    if [ "$(stat -c '%U' "$directory")" = "bind" ]; then
+    if [ "$(stat -c '%U' "$directory")" != "bind" ]; then
         chown -R bind:bind /var/log/bind
     fi
 fi
