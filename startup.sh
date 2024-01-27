@@ -67,7 +67,7 @@ cp -r Backend/node-api/* $web_path
 cp -r Backend/script/* $script_path
 cp $web_path/example.env $web_path/.env
 cp Backend/config/node_api.service /lib/systemd/system/
-sed -i -e "s|LOG_PATH='.*'|LOG_PATH='/root/dns-log'|" "$web_path/.env"
+sed -i -e "s|LOG_PATH='.*'|LOG_PATH='$web_path/dns-log'|" "$web_path/.env"
 chmod +x $script_path/*
 cd $web_path
 echo "Installing NPM Package ..."
