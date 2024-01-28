@@ -3,7 +3,7 @@ const cors = require('cors')
 const http = require('http')
 const ws = require('ws')
 const fs = require('fs')
-require('dotenv').config()
+require('dotenv').config({path:'/home/back_api/.env'})
 
 const app = express()
 const server = http.createServer(app)
@@ -20,7 +20,7 @@ wss.on('connection', (ws,req) => {
 
     let json_message = []
 
-    const fileStream = fs.createReadStream(process.env.LOG_PATH);
+    const fileStream = fs.createReadStream(logpath);
     fileStream.on('data', (data) => {
         list_data = data.toString()
         let object = list_data.split('|')
