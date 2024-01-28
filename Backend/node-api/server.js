@@ -8,6 +8,7 @@ require('dotenv').config({path:'/home/back_api/.env'})
 const app = express()
 const server = http.createServer(app)
 const wss = new ws.Server({ server })
+const logpath = process.env.LOG_PATH
 
 app.use(cors())
 
