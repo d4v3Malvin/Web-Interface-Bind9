@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-screen">
+    <div class="w-full h-auto">
       <h1 class="text-2xl">Dns Cache</h1>
       <DnsCacheComponent/>
     </div>

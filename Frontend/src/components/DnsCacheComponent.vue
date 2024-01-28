@@ -26,10 +26,10 @@
                         </thead>
                         <tbody>
                             <tr class="table-row w-full" v-for="data in filteredPageData" :key="data">
-                                <td class="table-cell border border-black w-50">{{ data.domain }}</td>
-                                <td class="table-cell border border-black w-50">{{ data.ttl }}</td>
-                                <td class="table-cell border border-black w-50">{{ data.type }}</td>
-                                <td class="table-cell border border-black w-50">{{ data.address }}</td>
+                                <td class="table-cell border border-black w-50 px-2">{{ data.domain }}</td>
+                                <td class="table-cell border border-black w-50 px-2">{{ data.ttl }}</td>
+                                <td class="table-cell border border-black w-50 px-2">{{ data.type }}</td>
+                                <td class="table-cell border border-black w-50 px-2">{{ data.address }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -66,7 +66,7 @@
                 ListCache: [],
                 cacheSize: "",
                 currentpage: 1,
-                totalitem: 20,
+                totalitem: 7,
                 searchQuery: '',
                 prevSearchQuery: '',
                 totalfilterdata: 0,
