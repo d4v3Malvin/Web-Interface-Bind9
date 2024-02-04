@@ -1,13 +1,27 @@
 <template>
   <div class="w-full min-h-screen bg-gradient-to-r from-indigo-500 to-indigo-300">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/dns-log">Dns Log</router-link> | 
-      <router-link to="/domain-block">Domain Block</router-link> |
-      <router-link to="/dns-cache">DNS Cache</router-link>
-    </nav>
-    <router-view/>
+    <div class="w-full h-full grid grid-cols-8">
+      <div class="min-h-screen col-span-1 sidebar bg-black">
+        <div class="w-full sidebar-menu">
+          <router-link to="/" :active-class="'bg-gray-100 text-black'" class="link" >Home</router-link>
+        </div>
+        <div class="w-full sidebar-menu">
+          <router-link to="/about" :active-class="'bg-gray-100 text-black'" class="link">About</router-link>
+        </div>
+        <div class="w-full sidebar-menu">
+          <router-link to="/dns-log" :active-class="'bg-gray-100 text-black'" class="link">Dns Log</router-link>
+        </div>
+        <div class="w-full sidear-menu">
+          <router-link to="/domain-block" :active-class="'bg-gray-100 text-black'" class="link">Domain Block</router-link>
+        </div>
+        <div class="w-full sidebar-menu">
+          <router-link to="/dns-cache" :active-class="'bg-gray-100 text-black'" class="link">DNS Cache</router-link>
+        </div>
+      </div>
+      <div class="col-span-7">
+        <router-view class="pt-5"/>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -25,9 +39,20 @@ nav {
   padding: 30px;
 }
 
+.sidebar {
+  font-weight: bold;
+  color: white;
+}
+
 nav a {
   font-weight: bold;
   color: #2c3e50;
+}
+
+.link {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
 }
 
 nav a.router-link-exact-active {
