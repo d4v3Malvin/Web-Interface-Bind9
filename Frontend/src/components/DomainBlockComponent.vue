@@ -4,11 +4,9 @@
             <div class="w-full"/>
             <div class="col-span-3">
                 <div>
-                    <div class="grid grid-cols-4 p-5">
-                        <div></div>
-                        <div class="text-xl">Search :</div>
-                        <div><input class="w-9/12 border border-black appearance-none" type="text" v-model="searchQuery"></div>
-                        <div></div>
+                    <div class="p-5">
+                        <label class="text-xl" for="searchquery">Search : </label>
+                        <input type="text" name="searchquery" v-model="searchQuery"> <br>
                     </div>
                 </div>
                 <div class="w-full">
@@ -174,3 +172,8 @@
         }
     }
 </script>
+<style scoped>
+label{
+    padding-right: calc(50%);
+}
+</style>
