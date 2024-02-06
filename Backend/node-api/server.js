@@ -3,6 +3,7 @@ const cors = require('cors')
 const http = require('http')
 const ws = require('ws')
 const fs = require('fs')
+const bodyParser = require('body-parser')
 require('dotenv').config({path:'/home/back_api/.env'})
 
 const app = express()
@@ -11,6 +12,8 @@ const wss = new ws.Server({ server })
 const logpath = process.env.LOG_PATH
 
 app.use(cors())
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 require('./Routes/routes') (app);
 

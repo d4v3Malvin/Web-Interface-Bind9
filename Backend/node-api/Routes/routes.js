@@ -7,10 +7,15 @@ module.exports = function (app) {
     })
 
     app.get('/list-dns-block', (req,res) => {
-        const process = spawn('/home/webScript/list_blocked_domain.sh')
-        process.stdout.on('data',(data) => {
-            res.json(data.toString())
-        })
+        const data = execSync('/home/webScript/list_blocked_domain.sh')
+        res.json(data.toString())
+    })
+
+    app.post('/add-dns-block', (req,res) => {
+        var { domain, type } = req.body;
+        var dns_type = type === 'ads' ? 'db.ads.rpz' : 'db.blocked.rpz'
+        const output = execSync('/home/webScript/add_domain.sh '+ dns_type + ' ' + domain)
+        res.json(output.toString())
     })
 
     app.get('/get-dns-traffic', (req,res) => {
