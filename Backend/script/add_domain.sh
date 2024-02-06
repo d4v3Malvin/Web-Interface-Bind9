@@ -8,7 +8,7 @@ function add_domain()
     file_contents=$(cat $1)
     domain=$2
 
-    if [[ ! $file_contents =~ "$domain	IN	CNAME	."   ]]; then
+    if [[ ! $file_contents =~ "$domain	IN	CNAME	0.0.0.0"   ]]; then
         sh -c "echo '$domain	IN	CNAME	0.0.0.0' >> $1"
         echo "success"
     else
@@ -16,14 +16,14 @@ function add_domain()
     fi
 }
 
-add_domain=$(add_domain /etc/bind/$filename $domain)
+domain_status=$(add_domain /etc/bind/$filename $domain)
 
-if [ "$add_domain" == "success" ]; then
-    add_domain /etc/bind/$filename *.$domain
-    rndc reload
+if [ "$domain_status" == "success" ]; then
+    add_domain /etc/bind/$filename *.$domain > /dev/null
+    rndc reload > /dev/null
     echo "Domain Successfully Added"
-elif [ "$add_domain" == "failed" ]; then 
+elif [ "$domain_status" == "failed" ]; then 
     echo "Domain Already Registered."
 else
-    echo "$add_domain"
+    echo "$domain_status"
 fi
