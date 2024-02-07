@@ -14,13 +14,15 @@
                         <thead class="table-row-group bg-blue-400">
                             <tr>
                                 <th class="table-cell border border-black">Domain</th>
-                                <th class="table-cell border border-black">Types</th>
+                                <th class="table-cell border border-black">DNS Types</th>
+                                <th class="table-cell border border-black">Block Types</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="table-row w-full" v-for="data in filteredPageData" :key="data">
                                 <td class="table-cell border border-black w-50">{{ data.split(',')[0] }}</td>
                                 <td class="table-cell border border-black w-50">{{ data.split(',')[1] }}</td>
+                                <td class="table-cell border border-black w-50">{{ data.split(',')[2] }}</td>
                             </tr>
                         </tbody>
                     </table>
