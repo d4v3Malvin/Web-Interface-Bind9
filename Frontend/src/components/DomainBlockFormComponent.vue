@@ -53,7 +53,12 @@
             add_domain_block() {
                 axios.post(`http://${process.env.VUE_APP_HOST_API}:3000/add-dns-block`, this.domaindata)
                 .then(response => {
+                    var modal = document.getElementById('div-modal')
+                    var button = document.getElementById('addbutton')
+                    modal.style.display = 'none'
+                    button.innerHTML = 'Add Domain Block'
                     alert(response.data)
+                    this.$parent.$refs.domainBlockTable.fetchData()
                 })
                 .catch(error => {
                     alert(error)
