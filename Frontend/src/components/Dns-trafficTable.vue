@@ -1,7 +1,7 @@
 <template>
     <div class="w-full min-h-full">
         <div class="w-full h-auto">
-            <div class="w-full grid grid-cols-2 px-10 py-3">
+            <!-- <div class="w-full grid grid-cols-2 px-10 py-3">
                 <div class="w-full flex justify-center py-5" v-if="tableData.length && !loading">
                     <div class="w-3/5">
                         <h1 class="text-center p-5 text-xl text-white">Top Success Domain Request</h1>
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="grid grid-cols-5 p-5">
                 <div class="grid grid-cols-4 col-span-2">
                     <div/>
@@ -67,20 +67,20 @@
                 <div class="w-full flex justify-center">
                     <table class="table w-4/5 bg-white" data-toogle="table">
                         <thead class="table-row-group">
-                            <tr class="table-row bg-blue-400">
-                                <th class="table-cell p-2 border border-black text-white" v-for="column in columns" :key=column>{{ column }}</th>
+                            <tr class="table-row">
+                                <th class="table-cell p-1 text-white" v-for="column in columns" :key=column>{{ column }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="table-row" v-for="data in filteredPageData" :key="data">
-                                <td class="table-cell p-2 border border-black">{{ data.type }}</td>
-                                <td class="table-cell p-2 border border-black">{{ data.domain }}</td>
-                                <td class="table-cell p-2 border border-black">{{ data.ip_source }}</td>
-                                <td class="table-cell p-2 border border-black">{{ data.dns_type }}</td>
-                                <td class="table-cell p-2 border border-black">{{ data.date }}</td>
-                                <td class="table-cell p-2 border border-black">{{ data.time }}</td>
-                                <td class="table-cell p-2 border border-black">{{ data.note }}</td>
-                                <td class="table-cell p-2 border border-black">
+                                <td class="table-cell p-1">{{ data.type }}</td>
+                                <td class="table-cell p-1 ">{{ data.domain }}</td>
+                                <td class="table-cell p-1 ">{{ data.ip_source }}</td>
+                                <td class="table-cell p-1 ">{{ data.dns_type }}</td>
+                                <td class="table-cell p-1 ">{{ data.date }}</td>
+                                <td class="table-cell p-1 ">{{ data.time }}</td>
+                                <td class="table-cell p-1 ">{{ data.note }}</td>
+                                <td class="table-cell p-1 ">
                                     <button class="p-2 bg-green-400">Add to Domain Block</button>
                                 </td>
                             </tr>

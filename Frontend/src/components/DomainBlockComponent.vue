@@ -11,20 +11,20 @@
                 </div>
                 <div class="w-full">
                     <table class="table w-full bg-white">
-                        <thead class="table-row-group bg-blue-400">
+                        <thead class="table-row-group">
                             <tr>
-                                <th class="table-cell border border-black">Domain</th>
-                                <th class="table-cell border border-black">DNS Types</th>
-                                <th class="table-cell border border-black">Block Types</th>
-                                <th class="table-cell border border-black">Actions</th>
+                                <th class="table-cell">Domain</th>
+                                <th class="table-cell">DNS Types</th>
+                                <th class="table-cell">Block Types</th>
+                                <th class="table-cell">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="table-row w-full" v-for="data in filteredPageData" :key="data">
-                                <td class="table-cell border border-black w-50">{{ data.split(',')[0] }}</td>
-                                <td class="table-cell border border-black w-50">{{ data.split(',')[1] }}</td>
-                                <td class="table-cell border border-black w-50">{{ data.split(',')[2] }}</td>
-                                <td class="table-cell border border-black w-50">
+                                <td class="table-cell w-50">{{ data.split(',')[0] }}</td>
+                                <td class="table-cell w-50">{{ data.split(',')[1] }}</td>
+                                <td class="table-cell w-50">{{ data.split(',')[2] }}</td>
+                                <td class="table-cell w-50">
                                     <button id="addbutton" @click="remove_block(data.split(',')[0],data.split(',')[2])" class="py-1 px-2 bg-red-500 my-1">Delete</button>
                                 </td>
                             </tr>

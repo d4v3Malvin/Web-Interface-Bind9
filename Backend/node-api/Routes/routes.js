@@ -33,6 +33,24 @@ module.exports = function (app) {
         })
     })
 
+    app.get('/get-top-query', (req,res) => {
+        const output = execSync('/home/webScript/get_top_query.sh ' + process.env.LOG_PATH + " 10 all")
+        let datalist = output.toString().trim()
+        const cleaned = datalist.split("\n")
+
+        let querys = []
+
+        for (const value of cleaned){
+            let query = value.trim().split(' ')
+            let querysatuan = {
+                count: query[0],
+                domain: query[1]
+            }
+            querys.push(querysatuan)
+        }
+        res.json(querys)
+    })
+
     app.get('/get-dns-cache', (req,res) => {
         let datalist = ""
         let ifdomain = "unknown"

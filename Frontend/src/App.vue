@@ -1,7 +1,7 @@
 <template>
   <div class="w-full min-h-screen bg-gradient-to-r from-indigo-500 to-indigo-300">
     <div class="w-full h-full grid grid-cols-8">
-      <div class="min-h-screen col-span-1 sidebar bg-black">
+      <div class="min-h-screen col-span-1 sidebar">
         <div class="w-full sidebar-menu">
           <router-link to="/" :active-class="'bg-gray-100 text-black'" class="link" >Home</router-link>
         </div>
@@ -45,6 +45,7 @@ nav {
 .sidebar {
   font-weight: bold;
   color: white;
+  background-color: #413f54;
 }
 
 nav a {
@@ -60,5 +61,14 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+
+thead {
+    background-color: #413f54; 
+    color: white;
+}
+
+tbody tr:nth-of-type(even) {
+    background-color: rgb(206, 206, 206);
 }
 </style>

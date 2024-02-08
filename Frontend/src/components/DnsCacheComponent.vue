@@ -16,20 +16,20 @@
                 </div>
                 <div class="w-full">
                     <table class="table w-full bg-white">
-                        <thead class="table-row-group bg-blue-400">
+                        <thead class="table-row-group">
                             <tr>
-                                <th class="table-cell border border-black">Domain</th>
-                                <th class="table-cell border border-black">Ttl</th>
-                                <th class="table-cell border border-black">Type</th>
-                                <th class="table-cell border border-black">Address</th>
+                                <th class="table-cell">Domain</th>
+                                <th class="table-cell">Ttl</th>
+                                <th class="table-cell">Type</th>
+                                <th class="table-cell">Address</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="table-row w-full" v-for="data in filteredPageData" :key="data">
-                                <td class="table-cell border border-black w-50 px-2">{{ data.domain }}</td>
-                                <td class="table-cell border border-black w-50 px-2">{{ data.ttl }}</td>
-                                <td class="table-cell border border-black w-50 px-2">{{ data.type }}</td>
-                                <td class="table-cell border border-black w-50 px-2">{{ data.address }}</td>
+                                <td class="table-cell w-50 px-2">{{ data.domain }}</td>
+                                <td class="table-cell w-50 px-2">{{ data.ttl }}</td>
+                                <td class="table-cell w-50 px-2">{{ data.type }}</td>
+                                <td class="table-cell w-50 px-2">{{ data.address }}</td>
                             </tr>
                         </tbody>
                     </table>
