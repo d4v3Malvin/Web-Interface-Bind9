@@ -16,6 +16,7 @@
                                 <th class="table-cell border border-black">Domain</th>
                                 <th class="table-cell border border-black">DNS Types</th>
                                 <th class="table-cell border border-black">Block Types</th>
+                                <th class="table-cell border border-black">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -23,6 +24,9 @@
                                 <td class="table-cell border border-black w-50">{{ data.split(',')[0] }}</td>
                                 <td class="table-cell border border-black w-50">{{ data.split(',')[1] }}</td>
                                 <td class="table-cell border border-black w-50">{{ data.split(',')[2] }}</td>
+                                <td class="table-cell border border-black w-50">
+                                    <button id="addbutton" @click="remove_block(data.split(',')[0],data.split(',')[2])" class="py-1 px-2 bg-red-500 my-1">Delete</button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -111,20 +115,19 @@
                     const response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/list-dns-block`);
                     this.ListBlockedDomain = response.data.toString().split('\n')
                     this.ListBlockedDomain = this.ListBlockedDomain.filter(value => Object.keys(value).length !== 0)
+                    // remove the one that have * on start 
+                    this.ListBlockedDomain = this.ListBlockedDomain.filter(value => value.split('')[0] !== "*")
                 } catch (error) {
                     this.error = "Error fetching data";
                     console.error("There was an error fetching the data", error);
                 }
             },
             datafilter(){
-            
                 let pagedata;
-
                 if (this.searchQuery != this.prevSearchQuery) {
                         this.currentpage = 1
                         this.prevSearchQuery = this.searchQuery // Store the previous search query
                 }
-
                 if (this.searchQuery.toString().trim().length == 0){
                     pagedata = this.ListBlockedDomain
                 }
@@ -135,10 +138,8 @@
                             data.toLowerCase().includes(this.searchQuery.toLowerCase())
                         );
                     });
-
                     pagedata =  filtered
                 }
-
                 return pagedata
             },
             nextpage(){
@@ -170,6 +171,16 @@
                 }
                 start = max - a
                 this.jumppage(this.totalpage)
+            },
+            remove_block(domain, type){
+                axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/delete-dns-block/${domain}?type=${type}`)
+                .then(response => {
+                    alert(response.data)
+                    this.fetchData()
+                })
+                .catch(error => {
+                    alert(error)
+                })
             }
         }
     }

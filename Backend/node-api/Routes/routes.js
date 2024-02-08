@@ -17,6 +17,14 @@ module.exports = function (app) {
         const output = execSync('/home/webScript/add_domain.sh '+ dns_type + ' ' + domain)
         res.json(output.toString())
     })
+    
+    app.get('/delete-dns-block/:domain' ,(req,res) => {
+        const { type } = req.query
+        const domain = req.params.domain
+        var dns_type = type === 'ads' ? 'db.ads.rpz' : 'db.blocked.rpz'
+        const output = execSync('/home/webScript/remove_domain_block.sh /etc/bind/' + dns_type + ' ' + domain)
+        res.json(output.toString() + " from " + type)
+    })
 
     app.get('/get-dns-traffic', (req,res) => {
         const process = spawn('/home/webScript/extract_log.sh', ['/home/back_api/dns-log'])

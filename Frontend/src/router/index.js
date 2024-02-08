@@ -8,6 +8,8 @@ import testaxios from '../views/testaxios.vue'
 
 import dnscache from '../views/DnsCacheView.vue'
 
+import dnsstats from '../views/DnsStats.vue'
+
 const routes = [
   {
     path: '/',
@@ -37,6 +39,11 @@ const routes = [
     path: '/dns-cache',
     name: 'DNS Cache',
     component: dnscache
+  },
+  {
+    path: '/stats',
+    name: 'DNS Statistics',
+    component: dnsstats
   }
 ]
 
