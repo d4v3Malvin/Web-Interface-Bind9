@@ -1,78 +1,32 @@
 <template>
     <div class="w-full min-h-full">
         <div class="w-full h-auto">
-            <!-- <div class="w-full grid grid-cols-2 px-10 py-3">
-                <div class="w-full flex justify-center py-5" v-if="tableData.length && !loading">
-                    <div class="w-3/5">
-                        <h1 class="text-center p-5 text-xl text-white">Top Success Domain Request</h1>
-                        <div class="flex justify-center w-full">
-                            <table class="table w-full bg-white">
-                                <thead class="table-row-group bg-blue-400">
-                                    <tr>
-                                        <th class="table-cell border border-black">Domain</th>
-                                        <th class="table-cell border border-black">Request</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="table-row" v-for="domain in topsuccessdomain" :key="domain">
-                                        <td class="table-cell border border-black">{{ domain[0] }}</td>
-                                        <td class="table-cell border border-black" >{{ domain[1] }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div class="w-4/5 h-min grid grid-cols-5 py-5" style="margin-left: calc(10%);">
+                <div class="col-span-2">
+                    <Multiselect class="w-4/5" v-model="selectedcat" :options="category" />
                 </div>
-                <div class="w-full flex justify-center py-5" v-if="tableData.length && !loading">
-                    <div class="w-3/5">
-                        <h1 class="text-center p-5 text-xl text-white">Top Blocked Domain Request</h1>
-                        <div class="flex justify-center w-full">
-                            <table class="table w-full bg-white">
-                                <thead class="table-row-group bg-blue-400">
-                                    <tr>
-                                        <th class="table-cell border border-black">Domain</th>
-                                        <th class="table-cell border border-black">Request</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="table-row" v-for="domain in topblockeddomain" :key="domain">
-                                        <td class="table-cell border border-black">{{ domain[0] }}</td>
-                                        <td class="table-cell border border-black" >{{ domain[1] }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="text-center flex flex-col justify-center items-center">Search :</div>
+                <div class="flex flex-col justify-center items-center">
+                    <input class="w-3/4 h-3/5" type="text" v-model="searchQuery">
                 </div>
-            </div> -->
-            <div class="grid grid-cols-5 p-5">
-                <div class="grid grid-cols-4 col-span-2">
-                    <div/>
-                    <Multiselect class="col-span-2" v-model="selectedcat" :options="category" />
-                    <div/>
-                </div>
-                <div class="text-xl text-end pe-16">Search :</div>
-                <div class="flex justify-start">
-                    <input class="w-9/12 border border-black appearance-none" type="text" v-model="searchQuery">
-                </div>
-                <div class="flex justify-start">
-                    <button @click="refreshlist()" class="border py-2 px-7 bg-purple-200">Refresh</button>
+                <div class="flex flex-col justify-center items-center">
+                    <button @click="refreshlist()" class="w-full h-3/4 w-3/4 bg-purple-200">Refresh</button>
                 </div>
             </div>
             <div v-if="isrefresh">
                 <h1 class="text-white text-2xl">Refreshing...</h1>
             </div>
-            <h1 class="text-2xl text-center pb-10 pt-5">BIND DNS History Log</h1>
+            <h1 class="text-2xl text-center pb-5">BIND DNS History Log</h1>
             <div class="flex-row w-full" v-if="tableData.length && !loading">
                 <div class="w-full flex justify-center">
-                    <table class="table w-4/5 bg-white" data-toogle="table">
+                    <table class="table w-4/5 bg-white text-sm" data-toogle="table">
                         <thead class="table-row-group">
                             <tr class="table-row">
                                 <th class="table-cell p-1 text-white" v-for="column in columns" :key=column>{{ column }}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="table-row" v-for="data in filteredPageData" :key="data">
+                            <tr class="table-row text-wrap" v-for="data in filteredPageData" :key="data">
                                 <td class="table-cell p-1">{{ data.type }}</td>
                                 <td class="table-cell p-1 ">{{ data.domain }}</td>
                                 <td class="table-cell p-1 ">{{ data.ip_source }}</td>
@@ -81,7 +35,8 @@
                                 <td class="table-cell p-1 ">{{ data.time }}</td>
                                 <td class="table-cell p-1 ">{{ data.note }}</td>
                                 <td class="table-cell p-1 ">
-                                    <button class="p-2 bg-green-400">Add to Domain Block</button>
+                                    <button class="px-1 w-1/2 bg-green-400" @click="add_domain_block(data.domain)" >Add to Domain Block</button>
+                                    <button class="px-1 w-1/2 bg-green-200">Add to Client Block</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -162,8 +117,8 @@
                 const start = (this.currentpage - 1) * this.totalitem
                 const end = start + this.totalitem
 
-                this.gettopsuccessdomain()
-                this.gettopblockeddomain()
+                // this.gettopsuccessdomain()
+                // this.gettopblockeddomain()
 
                 return this.datafilter().slice(start,end)
             },
@@ -271,75 +226,6 @@
 
                 return pagedata
             },
-            gettopsuccessdomain(){
-                let domainlist = []
-                let rpz = []
-
-                this.tableData.map(object => {
-                    if (object.type == "rpz"){
-                        if (!rpz.includes(object.domain)){
-                            rpz.push(object.domain)
-                        }
-                    }
-                })
-
-                this.tableData.map(object => {
-
-                    if (object.type == "queries"){
-                        
-
-                        if (domainlist[object.domain]){
-                            domainlist[object.domain]++
-                        }
-                        else{
-                            domainlist[object.domain] = 1
-                        }
-                    }
-                })
-
-                for (let i = 0; i < rpz.length; i++) {
-                    const rpzdomain = rpz[i];
-                    domainlist[rpzdomain] = 0
-                }
-
-                let sorteddomain = Object.entries(domainlist).sort((a,b) => b[1] - a[1])
-
-                sorteddomain = sorteddomain.slice(0,10  )
-
-                this.topsuccessdomain = sorteddomain
-
-            },
-            gettopblockeddomain(){
-                let domainlist = []
-                let rpz = []
-
-                this.tableData.map(object => {
-                    if (object.type == "rpz"){
-                        if (!rpz.includes(object.domain)){
-                            rpz.push(object.domain)
-                        }
-                    }
-                })
-
-                this.tableData.map(object => {
-
-                    if (rpz.includes(object.domain))
-                    {
-                        if (domainlist[object.domain]){
-                            domainlist[object.domain]++
-                        }
-                        else{
-                            domainlist[object.domain] = 1
-                        }
-                    }
-                })
-
-                let sorteddomain = Object.entries(domainlist).sort((a,b) => b[1] - a[1])
-
-                sorteddomain = sorteddomain.slice(0,10)
-
-                this.topblockeddomain = sorteddomain
-            },
             invokeFirst(){
                 start = 1
                 max = this.totalitem
@@ -364,11 +250,25 @@
                     this.ws.close();
                     this.ws.onclose = () => {
                         createwsconnection.call(this)
+                        this.isrefresh = false
                     }
                 } catch (error) {
                     this.error = "Error fetching data";
                     alert(error)
                     console.error("There was an error fetching the data", error);
+                }
+            },
+            add_domain_block(domain) {
+                let domaindata = {
+                    domain: domain,
+                    type: 'domain'
+                }
+                if (confirm("Are you sure you want to block this domain?")){
+                    axios.post(`http://${process.env.VUE_APP_HOST_API}:3000/add-dns-block`, domaindata)
+                    .then(response => {
+                        alert(response.data)
+                        this.refreshlist()
+                    })
                 }
             }
         },

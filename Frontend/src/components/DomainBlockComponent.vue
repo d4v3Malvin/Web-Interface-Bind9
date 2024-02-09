@@ -10,7 +10,7 @@
                     </div>
                 </div>
                 <div class="w-full">
-                    <table class="table w-full bg-white">
+                    <table class="table w-full text-sm bg-white">
                         <thead class="table-row-group">
                             <tr>
                                 <th class="table-cell">Domain</th>
@@ -25,7 +25,7 @@
                                 <td class="table-cell w-50">{{ data.split(',')[1] }}</td>
                                 <td class="table-cell w-50">{{ data.split(',')[2] }}</td>
                                 <td class="table-cell w-50">
-                                    <button id="addbutton" @click="remove_block(data.split(',')[0],data.split(',')[2])" class="py-1 px-2 bg-red-500 my-1">Delete</button>
+                                    <button id="deletebutton" @click="remove_block(data.split(',')[0],data.split(',')[2])" class="px-2 bg-red-500 my-1">Delete</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -186,7 +186,9 @@
     }
 </script>
 <style scoped>
-label{
-    padding-right: calc(50%);
-}
+
+    label{
+        padding-right: calc(50%);
+    }
+
 </style>

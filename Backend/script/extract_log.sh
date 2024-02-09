@@ -14,9 +14,10 @@ extract () {
 					query=$( echo $line | cut -d " " -f 10 )
 					type=$( echo $line | cut -d " " -f 12 )
 					echo $type_log,$date,$times,$client,$query,$type'|' >> $outputsfile
-		elif [[ $line =~ "query-error"  ]]; then
+		elif [[ $line =~ "query-errors"  ]]; then
 			query=$( echo $line | cut -d " " -f 8 )
-			echo $type_log,$date,$times,$client,$query,"error","Blocked By Client Filtering"'|' >> $outputsfile
+			error_message=$(echo $line | cut -d ":" -f 6 | grep -oP '\((.*?)\)')
+			echo $type_log,$date,$times,$client,$query,"error","query failed"$error_message'|' >> $outputsfile
 		elif [[ $line =~ "rpz" ]]; then
 			querys=$( echo $line | cut -d " " -f 8 | cut -d " " -f 1 | cut -d "(" -f 2)
 			zone=$(echo $line | cut -d " " -f 15)
@@ -34,5 +35,8 @@ cp /var/log/bind/query.log /var/log/bind/temp_query.log
 extract
 
 rm /var/log/bind/temp_query.log
+
+# clear the query.log so log not overlapping
+cat /dev/null > /var/log/bind/query.log
 
 rndc reload
