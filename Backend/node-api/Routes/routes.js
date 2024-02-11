@@ -123,6 +123,13 @@ module.exports = function (app) {
         res.json(ips)
     })
 
+    app.post('/add-ip-block', (req,res) => {
+        var { ip, blocks } = req.body;
+        var ip_address = ip + '/' + blocks + ";"
+        const output = execSync('/home/webScript/add_client.sh '+ ip_address)
+        res.json(output.toString())
+    })
+
     app.get('/flush-cache', (req,res) => {
         const cachelist = execSync('rndc flush')
         res.send("cache sudah terhapus")
