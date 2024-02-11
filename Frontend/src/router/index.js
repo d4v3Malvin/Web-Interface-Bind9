@@ -10,12 +10,19 @@ import dnscache from '../views/DnsCacheView.vue'
 
 import dnsstats from '../views/DnsStats.vue'
 
+import clientblockview from "../views/ClientBlockView.vue"
+
 const routes = [
   {
     path: '/',
     name: 'home',
     // component: HomeView
     component: testaxios
+  },
+  {
+    path: '/client-block',
+    name: 'Client Block',
+    component: clientblockview
   },
   {
     path: '/domain-block',

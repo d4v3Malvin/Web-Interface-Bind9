@@ -109,6 +109,20 @@ module.exports = function (app) {
         res.json(jsonmessage)
     })
 
+    app.get('/get-ip-block', (req,res) => {
+        const output = execSync('/home/webScript/get_list_blocked_ip.sh')
+        const cleaned = output.toString().trim().split('\n')
+
+        let ips = []
+
+        for (const value of cleaned){
+            let ip = value.replace('\t','')
+            ip = ip.replace(';','')
+            ips.push(ip)
+        }
+        res.json(ips)
+    })
+
     app.get('/flush-cache', (req,res) => {
         const cachelist = execSync('rndc flush')
         res.send("cache sudah terhapus")
