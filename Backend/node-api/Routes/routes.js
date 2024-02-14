@@ -130,6 +130,14 @@ module.exports = function (app) {
         res.json(output.toString())
     })
 
+    app.get('/delete-ip-block/:ip' ,(req,res) => {
+        const { block } = req.query
+        const ip = req.params.ip
+        let ips = ip + "/" + block
+        const output = execSync('/home/webScript/delete_client.sh ' + ips)
+        res.json(output.toString())
+    })
+
     app.get('/flush-cache', (req,res) => {
         const cachelist = execSync('rndc flush')
         res.send("cache sudah terhapus")

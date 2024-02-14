@@ -21,7 +21,7 @@
                             <tr class="table-row w-full" v-for="data in filteredPageData" :key="data">
                                 <td class="table-cell w-50">{{ data }}</td>
                                 <td class="table-cell w-50">
-                                    <button id="deletebutton" @click="remove_block(data.split(',')[0],data.split(',')[2])" class="px-2 bg-red-500 my-1">Delete</button>
+                                    <button id="deletebutton" @click="remove_block(data)" class="px-2 bg-red-500 my-1">Delete</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -107,7 +107,7 @@
             async fetchData() {
                 axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-ip-block`)
                 .then(response => {
-                    this.ListBlockedIP = response.data
+                    this.ListBlockedIP = response.data.filter(value => Object.keys(value).length > 0)
                 })
                 .catch(error => {
                     console.log(error)
@@ -163,15 +163,18 @@
                 start = max - a
                 this.jumppage(this.totalpage)
             },
-            remove_block(domain, type){
-                axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/delete-dns-block/${domain}?type=${type}`)
-                .then(response => {
-                    alert(response.data)
-                    this.fetchData()
-                })
-                .catch(error => {
-                    alert(error)
-                })
+            remove_block(ip){
+                let ips = ip.split('/')
+                if (confirm("Are you sure to delete this IP from ip block list?")){
+                    axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/delete-ip-block/${ips[0]}?block=${ips[1]}`)
+                    .then(response => {
+                        alert(response.data)
+                        this.fetchData()
+                    })
+                    .catch(error => {
+                        alert(error)
+                    })
+                }
             }
         }
     }
