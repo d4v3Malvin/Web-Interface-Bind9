@@ -173,14 +173,16 @@
                 this.jumppage(this.totalpage)
             },
             remove_block(domain, type){
-                axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/delete-dns-block/${domain}?type=${type}`)
-                .then(response => {
-                    alert(response.data)
-                    this.fetchData()
-                })
-                .catch(error => {
-                    alert(error)
-                })
+                if (confirm("Are You Sure you want to remove this domain from block?")){
+                    axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/delete-dns-block/${domain}?type=${type}`)
+                    .then(response => {
+                        alert(response.data)
+                        this.fetchData()
+                    })
+                    .catch(error => {
+                        alert(error)
+                    })
+                }
             }
         }
     }

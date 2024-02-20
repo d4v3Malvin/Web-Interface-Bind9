@@ -72,6 +72,6 @@ thead {
 }
 
 tbody tr:nth-of-type(even) {
-    background-color: rgb(206, 206, 206);
+    background-color: #c6e9de;
 }
 </style>

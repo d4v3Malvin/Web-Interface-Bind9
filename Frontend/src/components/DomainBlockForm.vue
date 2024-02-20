@@ -3,7 +3,7 @@
         <div class="w-full"/>
         <div class="col-span-3">
             <button id="addbutton" @click="openmodal()" class="py-1 px-2 bg-green-300 mt-2">Add Domain Block</button>
-            <div id="div-modal" class="py-3 insert-div mt-2 border border-black">
+            <div id="div-modal" class="py-3 insert-div mt-2 rounded-md" style="background-color: #d8d8d8">
                 <form @submit.prevent="add_domain_block" method="post">
                     <div class="w-full grid grid-cols-3">
                         <div class="col-span-2 text-left label-input">
@@ -46,17 +46,13 @@
         methods: {
             openmodal() {
                 var modal = document.getElementById('div-modal')
-                var button = document.getElementById('addbutton')
-                button.innerHTML = (modal.style.display === 'none' || modal.style.display === '') ? 'close' : 'Add Domain Block'
                 modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'block' : 'none'
             },
             add_domain_block() {
                 axios.post(`http://${process.env.VUE_APP_HOST_API}:3000/add-dns-block`, this.domaindata)
                 .then(response => {
                     var modal = document.getElementById('div-modal')
-                    var button = document.getElementById('addbutton')
                     modal.style.display = 'none'
-                    button.innerHTML = 'Add Domain Block'
                     alert(response.data)
                     this.$parent.$refs.domainBlockTable.fetchData()
                 })

@@ -1,23 +1,26 @@
 <template>
     <div class="w-full min-h-full">
+        <h1 class="text-2xl text-center">BIND DNS History Log</h1>
         <div class="w-full h-auto">
-            <div class="w-4/5 h-min grid grid-cols-5 py-5" style="margin-left: calc(10%);">
-                <div class="col-span-2">
-                    <Multiselect class="w-4/5" v-model="selectedcat" :options="category" />
-                </div>
-                <div class="text-center flex flex-col justify-center items-center">Search :</div>
-                <div class="flex flex-col justify-center items-center">
-                    <input class="w-3/4 h-3/5" type="text" v-model="searchQuery">
-                </div>
-                <div class="flex flex-col justify-center items-center">
-                    <button @click="refreshlist()" class="w-full h-3/4 w-3/4 bg-purple-200">Refresh</button>
-                </div>
-            </div>
+            
             <div v-if="isrefresh">
                 <h1 class="text-white text-2xl">Refreshing...</h1>
             </div>
-            <h1 class="text-2xl text-center pb-5">BIND DNS History Log</h1>
             <div class="flex-row w-full" v-if="tableData.length && !loading">
+                <div class="w-full flex justify-center">
+                    <div class="w-4/5 h-min grid grid-cols-5 py-5">
+                        <div class="col-span-2">
+                            <Multiselect class="w-full" v-model="selectedcat" :options="category" />
+                        </div>
+                        <div class="text-center flex flex-col justify-center items-center">Search :</div>
+                        <div class="flex flex-col justify-center items-center">
+                            <input class="w-3/4 h-3/5" type="text" v-model="searchQuery">
+                        </div>
+                        <div class="flex flex-col justify-center items-center">
+                            <button @click="refreshlist()" class="w-full h-3/4 w-3/4 bg-purple-200">Refresh</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="w-full flex justify-center">
                     <table class="table w-4/5 bg-white text-sm" data-toogle="table">
                         <thead class="table-row-group">
@@ -35,8 +38,8 @@
                                 <td class="table-cell p-1 ">{{ data.time }}</td>
                                 <td class="table-cell p-1 ">{{ data.note }}</td>
                                 <td class="table-cell p-1 ">
-                                    <button class="px-1 w-1/2 bg-green-400" @click="add_domain_block(data.domain)" >Add to Domain Block</button>
-                                    <button class="px-1 w-1/2 bg-green-200">Add to Client Block</button>
+                                    <button class="w-2/5 mx-1 py-0.5 bg-green-700 text-white rounded-md" @click="add_domain_block(data.domain)" >Domain</button>
+                                    <button class="w-2/5 mx-1 py-0.5 bg-blue-700 text-white rounded-md" @click="add_client_block(data.ip_source)">Client</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -90,7 +93,7 @@
         data() {
             return {
                 loading: true,
-                columns: ['type', 'Domain', 'Ip Address', 'Dns Type','Date','Time','Note','Action'],
+                columns: ['type', 'Domain', 'Ip Address', 'Dns Type','Date','Time','Note','Add to block'],
                 isrefresh: false,
                 selectedcat: "queries",
                 category: ['queries','rpz','query-errors'],
@@ -265,6 +268,20 @@
                 }
                 if (confirm("Are you sure you want to block this domain?")){
                     axios.post(`http://${process.env.VUE_APP_HOST_API}:3000/add-dns-block`, domaindata)
+                    .then(response => {
+                        alert(response.data)
+                        this.refreshlist()
+                    })
+                }
+            },
+            add_client_block(ip){
+                const block = 32;
+                let clientData = {
+                    ip: ip,
+                    blocks: block.toString()
+                }
+                if (confirm("Are you sure you want to block this client ip?")){
+                    axios.post(`http://${process.env.VUE_APP_HOST_API}:3000/add-ip-block`, clientData)
                     .then(response => {
                         alert(response.data)
                         this.refreshlist()
