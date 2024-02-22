@@ -48,6 +48,7 @@ module.exports = function (app) {
             }
             querys.push(querysatuan)
         }
+        console.log(querys)
         res.json(querys)
     })
 
@@ -133,7 +134,7 @@ module.exports = function (app) {
     app.get('/delete-ip-block/:ip' ,(req,res) => {
         const { block } = req.query
         const ip = req.params.ip
-        let ips = ip + "/" + block
+        let ips = ip + "/" + block + ";"
         const output = execSync('/home/webScript/delete_client.sh ' + ips)
         res.json(output.toString())
     })

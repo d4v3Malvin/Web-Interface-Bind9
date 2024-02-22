@@ -7,6 +7,48 @@ extract () {
 	while read line; do
 		sh -c "sed -i \"/$line/d\" /var/log/bind/query.log"
 		date=$( echo $line | cut -d " " -f 1 )
+		day=$( echo $date | cut -d "-" -f 1 )
+		month=$( echo $date | cut -d "-" -f 2 )
+		year=$( echo $date | cut -d "-" -f 3 )
+		case $month in
+			"Jan")
+				number_month=1
+			;;
+			"Feb")
+				number_month=2
+			;;
+			"Mar")
+				number_month=3
+			;;
+			"Apr")
+				number_month=4
+			;;
+			"May")
+				number_month=5
+			;;
+			"Jun")
+				number_month=6
+			;;
+			"Jul")
+				number_month=7
+			;;
+			"Aug")
+				number_month=8
+			;;
+			"Sep")
+				number_month=9
+			;;
+			"Oct")
+				number_month=10
+			;;
+			"Nov")
+				number_month=11
+			;;
+			"Dec")
+				number_month=12
+			;;
+		esac
+		date=$day-$number_month-$year
 		type_log=$( echo $line | cut -d " " -f 3 | cut -d ":" -f 1)
 		client=$( echo $line | cut -d " " -f 7 | cut -d "#" -f 1 )
 		times=$( echo $line | cut -d " " -f 2 | cut -d "." -f 1 )

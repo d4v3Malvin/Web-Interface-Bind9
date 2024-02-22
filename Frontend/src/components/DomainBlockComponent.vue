@@ -25,7 +25,7 @@
                                 <td class="table-cell w-50">{{ data.split(',')[1] }}</td>
                                 <td class="table-cell w-50">{{ data.split(',')[2] }}</td>
                                 <td class="table-cell w-50">
-                                    <button id="deletebutton" @click="remove_block(data.split(',')[0],data.split(',')[2])" class="px-2 bg-red-500 my-1">Delete</button>
+                                    <button id="deletebutton" @click="remove_block(data.split(',')[0],data.split(',')[2])" class="px-2 bg-red-500 my-1 text-white">Delete</button>
                                 </td>
                             </tr>
                         </tbody>

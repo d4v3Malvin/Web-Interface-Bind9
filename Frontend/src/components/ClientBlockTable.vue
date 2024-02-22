@@ -21,7 +21,7 @@
                             <tr class="table-row w-full" v-for="data in filteredPageData" :key="data">
                                 <td class="table-cell w-50">{{ data }}</td>
                                 <td class="table-cell w-50">
-                                    <button id="deletebutton" @click="remove_block(data)" class="px-2 bg-red-500 my-1">Delete</button>
+                                    <button id="deletebutton" @click="remove_block(data)" class="px-2 bg-red-500 my-1 text-white">Delete</button>
                                 </td>
                             </tr>
                         </tbody>

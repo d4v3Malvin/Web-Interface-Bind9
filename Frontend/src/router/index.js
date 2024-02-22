@@ -12,6 +12,8 @@ import dnsstats from '../views/DnsStats.vue'
 
 import clientblockview from "../views/ClientBlockView.vue"
 
+import dnsSetting from "../views/SettingView.vue"
+
 const routes = [
   {
     path: '/',
@@ -51,6 +53,11 @@ const routes = [
     path: '/stats',
     name: 'DNS Statistics',
     component: dnsstats
+  },
+  {
+    path: '/setting',
+    name: 'DNS Setting',
+    component: dnsSetting
   }
 ]
 

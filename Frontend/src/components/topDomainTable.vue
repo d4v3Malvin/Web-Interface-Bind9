@@ -64,6 +64,7 @@
             getTopDomain(){
                 axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query`)
                 .then(response => {
+                    console.log(response.data)
                     this.all_domain = response.data.sort((a,b) => b.count - a.count)
                     this.generate_all_diagram()
                 })
