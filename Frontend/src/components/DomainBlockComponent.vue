@@ -113,10 +113,7 @@
                 try {
                     // Replace with your API endpoint
                     const response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/list-dns-block`);
-                    this.ListBlockedDomain = response.data.toString().split('\n')
-                    this.ListBlockedDomain = this.ListBlockedDomain.filter(value => Object.keys(value).length !== 0)
-                    // remove the one that have * on start 
-                    this.ListBlockedDomain = this.ListBlockedDomain.filter(value => value.split('')[0] !== "*")
+                    this.ListBlockedDomain = response.data
                 } catch (error) {
                     this.error = "Error fetching data";
                     console.error("There was an error fetching the data", error);

@@ -49,16 +49,22 @@
                 modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'block' : 'none'
             },
             add_domain_block() {
-                axios.post(`http://${process.env.VUE_APP_HOST_API}:3000/add-dns-block`, this.domaindata)
-                .then(response => {
-                    var modal = document.getElementById('div-modal')
-                    modal.style.display = 'none'
-                    alert(response.data)
-                    this.$parent.$refs.domainBlockTable.fetchData()
-                })
-                .catch(error => {
-                    alert(error)
-                })
+                if (this.domaindata.domain.length <= 0){
+                    alert("Input cant be Empty")
+                }
+                else {
+                    axios.post(`http://${process.env.VUE_APP_HOST_API}:3000/add-dns-block`, this.domaindata)
+                    .then(response => {
+                        var modal = document.getElementById('div-modal')
+                        modal.style.display = 'none'
+                        alert(response.data)
+                        this.$parent.$refs.domainBlockTable.fetchData()
+                    })
+                    .catch(error => {
+                        alert(error)
+                    })
+                }
+                
             }
         }
     }

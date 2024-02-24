@@ -214,12 +214,12 @@
                     const filtered = this.tableData.filter((data) => {
                         if (data.type == this.selectedcat){
                             return (
-                                data.type.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                data.domain.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                data.ip_source.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                data.dns_type.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                data.date.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                data.time.toLowerCase().includes(this.searchQuery.toLowerCase())
+                                data.type.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase()) ||
+                                data.domain.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase()) ||
+                                data.ip_source.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase()) ||
+                                data.dns_type.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase()) ||
+                                data.date.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase()) ||
+                                data.time.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase())
                             );
                         }
                     });

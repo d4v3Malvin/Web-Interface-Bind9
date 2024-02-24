@@ -1,8 +1,8 @@
 <template>
     <div class="w-full h-auto">
         <div class="w-full h-auto grid grid-cols-2">
+            <div class="w-full col-span-2"><h1 class="text-center py-5 text-xl text-white">Top All Domain Request Last 30 Min</h1></div>
             <div class="w-3/5 h-auto" style="margin-left: calc(20%); margin-right: calc(20%);">
-                <h1 class="text-center py-5 text-xl text-white">Top Domain Request</h1>
                 <div class="flex justify-center w-full">
                     <table class="table w-full bg-white">
                         <thead class="table-row-group">
@@ -20,30 +20,11 @@
                     </table>
                 </div>
             </div>
-            <div class="w-full h-auto">
-                <div class="w-4/5 h-full" style="padding-left: calc(10%);">
-                    <canvas id="all_domain_stats"></canvas>
+            <div class="w-full h-full">
+                <div style="width: 65%; height: 100%;" >
+                    <canvas id="all_domain_stats" style="width: 60%; height: 60%;"></canvas>
                 </div>
             </div>
-            <!-- <div class="w-3/5 h-auto" style="margin-left: calc(20%);">
-                <h1 class="text-center py-5 text-xl text-white">Top Domain Request</h1>
-                <div class="flex justify-center w-full">
-                    <table class="table w-full bg-white">
-                        <thead class="table-row-group bg-blue-400">
-                            <tr>
-                                <th class="table-cell border border-black">Domain</th>
-                                <th class="table-cell border border-black">Request</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="table-row" v-for="domain in all_domain" :key="domain">
-                                <td class="table-cell border border-black">{{ domain.domain }}</td>
-                                <td class="table-cell border border-black" >{{ domain.count }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div> -->
         </div>
     </div>
 </template>
@@ -97,7 +78,17 @@
                         options: {
                             plugins: {
                                 legend: {
-                                    position: 'left'
+                                    position: 'right',
+                                    labels: {
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                }
+                            },
+                            layout: {
+                                padding: {
+                                    bottom: 100
                                 }
                             }
                         }

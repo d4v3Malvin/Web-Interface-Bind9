@@ -33,13 +33,12 @@ wss.on('connection', (ws,req) => {
 
             let object = value.split(',')
 
-            var months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
-
             let waktu = new String(object[2])
             let times = waktu.split(':')
-            let tanggal = new String(object[1]).split('-')
+            let tanggal = String(object[1]).split('-')
             let date = new Date()
-            date.setUTCMonth(months.indexOf(String(tanggal[1]).toLowerCase()),tanggal[0])
+            // since januari are count as 0
+            date.setUTCMonth(tanggal[1]-1,tanggal[0])
             date.setUTCFullYear(tanggal[2])
             date.setUTCHours(times[0],times[1],times[2])
             let datetime = date.toLocaleDateString('ID', {
@@ -56,19 +55,21 @@ wss.on('connection', (ws,req) => {
             let time = String(datetime[1]).split('.')
 
             let log = {
-                type: object[0].replace('\n',''),
-                date: datetime[0],
+                type: object[0].replace('\n','').toString(),
+                date: datetime[0].toString(),
                 time: time[0] + ":" + time[1] + ":" + time[2],
-                ip_source: object[3],
-                domain: object[4],
-                dns_type: object[5],
+                ip_source: String(object[3]),
+                domain: String(object[4]),
+                dns_type: String(object[5]),
                 note: object[6] || 'none'
             }
+
             json_message.push(log)
         }
     });
 
     fileStream.on('end', () => {
+        json_message = json_message.filter(data => data.type.length > 0)
         ws.send(JSON.stringify(json_message));
     })
     

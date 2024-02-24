@@ -8,7 +8,11 @@ module.exports = function (app) {
 
     app.get('/list-dns-block', (req,res) => {
         const data = execSync('/home/webScript/list_blocked_domain.sh')
-        res.json(data.toString())
+        let list = data.toString().split('\n')
+        list = list.filter(value => Object.keys(value).length > 0)
+        // remove the one that have * on start 
+        list = list.filter(value => value.split('')[0] !== "*")
+        res.json(list)
     })
 
     app.post('/add-dns-block', (req,res) => {
@@ -48,7 +52,6 @@ module.exports = function (app) {
             }
             querys.push(querysatuan)
         }
-        console.log(querys)
         res.json(querys)
     })
 
