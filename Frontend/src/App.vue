@@ -1,7 +1,7 @@
-<template>
+<template class="overflow-scroll">
   <div class="w-full min-h-screen bg-gradient-to-r from-indigo-500 to-indigo-300">
     <div class="w-full h-full grid grid-cols-8">
-      <div class="min-h-screen col-span-1 sidebar">
+      <div class="min-h-screen h-auto col-span-1 sidebar">
         <div class="w-full sidebar-menu">
           <router-link to="/" :active-class="'bg-gray-100 text-black'" class="link" >Home</router-link>
         </div>

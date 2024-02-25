@@ -1,7 +1,34 @@
 <template>
-    <div class="w-full h-auto">
-        <div class="w-full h-auto grid grid-cols-2">
+    <div class="w-full h-auto snap-y snap-mandatory">
+        <div class="w-full min-h-screen grid grid-cols-2 snap-center">
+            <h1 class="text-2xl col-span-2">DNS Stats</h1>
             <div class="w-full col-span-2"><h1 class="text-center py-5 text-xl text-white">Top All Domain Request Last 30 Min</h1></div>
+            <div class="w-3/5 h-auto" style="margin-left: calc(20%); margin-right: calc(20%);">
+                <div class="flex justify-center w-full">
+                    <table class="table w-full bg-white">
+                        <thead class="table-row-group">
+                            <tr>
+                                <th class="table-cell">Domain</th>
+                                <th class="table-cell">Request</th>
+                            </tr>
+                        </thead>
+                        <tbody style="background-color: #f3eaf4;">
+                            <tr class="table-row bg-purple-200" v-for="domain in all_domain" :key="domain">
+                                <td class="table-cell">{{ domain.domain }}</td>
+                                <td class="table-cell" >{{ domain.count }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="w-full h-full">
+                <div style="width: 65%; height: 100%;" >
+                    <canvas id="all_domain_stats" style="width: 60%; height: 60%;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="w-full min-h-screen grid grid-cols-2 snap-center">
+            <div class="w-full col-span-2"><h1 class="text-center py-5 text-xl text-white">Top Success Domain Request Last 30 Min</h1></div>
             <div class="w-3/5 h-auto" style="margin-left: calc(20%); margin-right: calc(20%);">
                 <div class="flex justify-center w-full">
                     <table class="table w-full bg-white">

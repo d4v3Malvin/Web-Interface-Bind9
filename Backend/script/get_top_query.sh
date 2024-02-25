@@ -3,11 +3,16 @@
 log_path=$1
 number=$2
 type=$3
+outputsfile="/tmp/temp_top1"
 
 awk_query=""
 
 if [[ $type == "all" ]]; then
     awk_query+='|| $1=="query-errors" '
+fi
+
+if [ ! -e "$outputsfile" ]; then 
+	touch "$outputsfile"
 fi
 
 awk -F, -v time_in_second=$(date -d '-30 minutes' +'%s') \
@@ -20,11 +25,16 @@ awk -F, -v time_in_second=$(date -d '-30 minutes' +'%s') \
     }
 }' "$log_path" \
 | sed 's/[()]//g; s/:$//' \
-| sort \
+| sort > $outputsfile
+
+cat $outputsfile \
 | uniq -c \
 | sort -r \
-| head -n "$number"
+| head -n "$number" > /tmp/tmpfiles1
 
+cat /tmp/tmpfiles1
+
+rm $outputsfile
 
 # awk -F, -v dates=$(date -d '-5 minutes' +'%d-%b-%Y') \
 # -v times=$(date -d '-5 minutes' +'%H:%M:%S') \

@@ -3,6 +3,7 @@ const cors = require('cors')
 const http = require('http')
 const ws = require('ws')
 const fs = require('fs')
+const StringDecoder = require('string_decoder').StringDecoder
 const bodyParser = require('body-parser')
 require('dotenv').config({path:'/home/back_api/.env'})
 
@@ -26,7 +27,8 @@ wss.on('connection', (ws,req) => {
 
     const fileStream = fs.createReadStream(logpath);
     fileStream.on('data', (data) => {
-        list_data = data.toString()
+        var decoder = new StringDecoder('utf8')
+        list_data = decoder.write(data)
         let object = list_data.split('|')
 
         for(const value of object){
