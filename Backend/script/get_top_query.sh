@@ -1,14 +1,17 @@
 #!/bin/bash
 
 log_path=$1
-number=$2
-type=$3
+type=$2
 outputsfile="/tmp/temp_top1"
 
 awk_query=""
 
 if [[ $type == "all" ]]; then
-    awk_query+='|| $1=="query-errors" '
+    awk_query+='$1=="queries" || $1=="query-errors"'
+elif [[ $type == "success" ]]; then
+    awk_query+='$1=="queries"'
+elif [[ $type == "blocked" ]]; then
+    awk_query+='$1=="rpz"'
 fi
 
 if [ ! -e "$outputsfile" ]; then 
@@ -16,7 +19,7 @@ if [ ! -e "$outputsfile" ]; then
 fi
 
 awk -F, -v time_in_second=$(date -d '-30 minutes' +'%s') \
-'$1=="queries"'"$awk_query"'{
+"$awk_query"'{
     split($2, dates, "-")
     split($3, times, ":")
     query_time = mktime(dates[3] " " dates[2] " " dates[1] " " times[1] " " times[2] " " times[3])
@@ -27,16 +30,14 @@ awk -F, -v time_in_second=$(date -d '-30 minutes' +'%s') \
 | sed 's/[()]//g; s/:$//' \
 | sort > $outputsfile
 
-cat $outputsfile \
-| uniq -c \
-| sort -r \
-| head -n "$number" > /tmp/tmpfiles1
+cat $outputsfile | uniq -c > /tmp/tmpfiles1
 
+# Remove all tab in start of line.
+sed -i 's/^[ \t]*//' /tmp/tmpfiles1 
+
+#tail -n +1 /tmp/tmpfiles1  | head -n 10
 cat /tmp/tmpfiles1
 
 rm $outputsfile
 
-# awk -F, -v dates=$(date -d '-5 minutes' +'%d-%b-%Y') \
-# -v times=$(date -d '-5 minutes' +'%H:%M:%S') \
-# '$1=="queries" && ($2 " " $3 >= dates " " times)'"$awk_query"'{print $5}' $log_path \
-# | sed 's/[()]//g; s/:$//' | sort | uniq -c | sort -r | head -n $number
+rm /tmp/tmpfiles1

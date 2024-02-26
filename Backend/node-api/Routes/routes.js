@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { spawn, execSync, execFile, execFileSync } = require("child_process")
+const { spawn, execSync, execFileSync } = require("child_process")
 const StringDecoder = require('string_decoder').StringDecoder
 
 module.exports = function (app) {
@@ -41,17 +41,14 @@ module.exports = function (app) {
         })
     })
 
-    app.get('/get-top-query', (req,res) => {
-        const command = '/home/webScript/get_top_query.sh ' + process.env.LOG_PATH + ' 10 all'
-        // const output = execSync("/home/webScript/get_top_query.sh " + process.env.LOG_PATH + " 10 all")
-        let output = ""
+    app.get('/get-top-query/:type', (req,res) => {
+        const top_type = req.params.type
 
         var decoder = new StringDecoder('utf8')
 
-        const child = execFileSync('/home/webScript/get_top_query.sh',[process.env.LOG_PATH,'10','all'])
+        const result = execFileSync('/home/webScript/get_top_query.sh', [process.env.LOG_PATH,top_type]);  
 
-        output = decoder.write(child)
-        let datalist = output.toString().trim()
+        let datalist = decoder.write(result).trim()
         const cleaned = datalist.split("\n")
 
         let querys = []
@@ -64,7 +61,15 @@ module.exports = function (app) {
             }
             querys.push(querysatuan)
         }
-        res.json(querys)
+        querys = querys.sort((a,b) => b.count - a.count)
+
+        let top10 = []
+
+        for (let i = 0; i < querys.length && i < 10; i++) {
+            top10.push(querys[i])
+        }
+
+        res.json(top10)
     })
 
     app.get('/get-dns-cache', (req,res) => {
