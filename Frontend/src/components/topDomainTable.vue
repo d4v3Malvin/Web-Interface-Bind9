@@ -12,10 +12,15 @@
                                 <th class="table-cell">Request</th>
                             </tr>
                         </thead>
-                        <tbody style="background-color: #f3eaf4;">
+                        <tbody v-if="all_domain.length > 0" style="background-color: #f3eaf4;">
                             <tr class="table-row bg-purple-200" v-for="domain in all_domain" :key="domain">
                                 <td class="table-cell">{{ domain.domain }}</td>
                                 <td class="table-cell" >{{ domain.count }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody v-else style="background-color: #f3eaf4;">
+                            <tr class="table-row bg-purple-200">
+                                <td class="table-cell" colspan="2">No Domain Available</td>
                             </tr>
                         </tbody>
                     </table>
@@ -38,10 +43,15 @@
                                 <th class="table-cell">Request</th>
                             </tr>
                         </thead>
-                        <tbody style="background-color: #f3eaf4;">
+                        <tbody v-if="success_domain.length > 0" style="background-color: #f3eaf4;">
                             <tr class="table-row bg-purple-200" v-for="domain in success_domain" :key="domain">
                                 <td class="table-cell">{{ domain.domain }}</td>
                                 <td class="table-cell" >{{ domain.count }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody v-else style="background-color: #f3eaf4;">
+                            <tr class="table-row bg-purple-200">
+                                <td class="table-cell" colspan="2">No Success Domain Available</td>
                             </tr>
                         </tbody>
                     </table>
@@ -64,10 +74,15 @@
                                 <th class="table-cell">Request</th>
                             </tr>
                         </thead>
-                        <tbody style="background-color: #f3eaf4;">
+                        <tbody v-if="blocked_domain.length > 0" style="background-color: #f3eaf4;">
                             <tr class="table-row bg-purple-200" v-for="domain in blocked_domain" :key="domain">
                                 <td class="table-cell">{{ domain.domain }}</td>
                                 <td class="table-cell" >{{ domain.count }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody v-else style="background-color: #f3eaf4;">
+                            <tr class="table-row bg-purple-200">
+                                <td class="table-cell" colspan="2">No Blocked Domain Available</td>
                             </tr>
                         </tbody>
                     </table>
@@ -100,7 +115,6 @@
             async getTopDomain(){
                 let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/all`)
                 this.all_domain = response.data
-                console.log(response)
                 response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/success`)
                 this.success_domain = response.data
                 response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/blocked`)

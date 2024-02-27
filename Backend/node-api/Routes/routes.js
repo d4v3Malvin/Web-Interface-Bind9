@@ -12,8 +12,6 @@ module.exports = function (app) {
         var decoder = new StringDecoder('utf8')
         let list = decoder.write(data).split('\n')
         list = list.filter(value => Object.keys(value).length > 0)
-        // remove the one that have * on start 
-        list = list.filter(value => value.split('')[0] !== "*")
         res.json(list)
     })
 
@@ -49,27 +47,35 @@ module.exports = function (app) {
         const result = execFileSync('/home/webScript/get_top_query.sh', [process.env.LOG_PATH,top_type]);  
 
         let datalist = decoder.write(result).trim()
-        const cleaned = datalist.split("\n")
 
-        let querys = []
+        if (datalist.length > 0){
+            const cleaned = datalist.split("\n")
 
-        for (const value of cleaned){
-            let query = value.trim().split(' ')
-            let querysatuan = {
-                count: query[0],
-                domain: query[1]
+            let querys = []
+
+            for (const value of cleaned){
+                let query = value.trim().split(' ')
+                let querysatuan = {
+                    count: query[0],
+                    domain: query[1] || ""
+                }
+                querys.push(querysatuan)
             }
-            querys.push(querysatuan)
+            querys = querys.sort((a,b) => b.count - a.count)
+
+            let top10 = []
+
+            for (let i = 0; i < querys.length && i < 10; i++) {
+                top10.push(querys[i])
+            }
+
+            console.log(datalist.length)
+
+            res.json(top10)
         }
-        querys = querys.sort((a,b) => b.count - a.count)
-
-        let top10 = []
-
-        for (let i = 0; i < querys.length && i < 10; i++) {
-            top10.push(querys[i])
+        else{
+            res.json([])
         }
-
-        res.json(top10)
     })
 
     app.get('/get-dns-cache', (req,res) => {
@@ -134,16 +140,19 @@ module.exports = function (app) {
 
     app.get('/get-ip-block', (req,res) => {
         const output = execSync('/home/webScript/get_list_blocked_ip.sh')
-        var decoder = new StringDecoder('utf8')
+        var decoder = new StringDecoder('utf8')        
         const cleaned = decoder.write(output).trim().split('\n')
 
         let ips = []
 
-        for (const value of cleaned){
-            let ip = value.replace('\t','')
-            ip = ip.replace(';','')
-            ips.push(ip)
+        if (decoder.write(output) != ''){
+            for (const value of cleaned){
+                let ip = value.replace('\t','')
+                ip = ip.replace(';','')
+                ips.push(ip)
+            }
         }
+
         res.json(ips)
     })
 

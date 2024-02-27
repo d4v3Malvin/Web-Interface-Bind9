@@ -6,7 +6,7 @@
             <div v-if="isrefresh">
                 <h1 class="text-white text-2xl">Refreshing...</h1>
             </div>
-            <div class="flex-row w-full" v-if="tableData.length && !loading">
+            <div class="flex-row w-full" v-if="!loading">
                 <div class="w-full flex justify-center">
                     <div class="w-4/5 h-min grid grid-cols-5 py-5">
                         <div class="col-span-2">
@@ -28,7 +28,7 @@
                                 <th class="table-cell p-1 text-white" v-for="column in columns" :key=column>{{ column }}</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="datafilter().length > 0">
                             <tr class="table-row text-wrap" v-for="data in filteredPageData" :key="data">
                                 <td class="table-cell p-1">{{ data.type }}</td>
                                 <td class="table-cell p-1 ">{{ data.domain }}</td>
@@ -43,6 +43,11 @@
                                 </td>
                             </tr>
                         </tbody>
+                        <tbody v-else>
+                            <tr class="table-row text-wrap">
+                                <td class="table-cell" colspan="8">No DNS Log</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
                 <div class="w-full flex justify-center py-4">
@@ -51,12 +56,12 @@
                     <div v-for="pagenumber in pageNumbers" :key="pagenumber">
                         <button class="py-1 px-2 mx-1 border" :class="currentpage == pagenumber ? 'border-black bg-white text-black' : 'border-white text-white'" :hidden="pagenumber > totalpagefilter"  @click="jumppage(pagenumber)" >{{ pagenumber }}</button>
                     </div>
-                    <button class="py-1 px-2 mx-1 border border-white text-white" @click="nextpage" :disabled="currentpage === totalpage">Next</button>
-                    <button class="py-1 px-2 mx-1 border border-white text-white" @click="invokeLast()" :disabled="currentpage === this.totalpage">Last</button>
+                    <button class="py-1 px-2 mx-1 border border-white text-white" @click="nextpage" :disabled="currentpage >= totalpage">Next</button>
+                    <button class="py-1 px-2 mx-1 border border-white text-white" @click="invokeLast()" :disabled="currentpage >= this.totalpage">Last</button>
                 </div>
             </div>
             <div class="pt-2" v-else>
-                <h1 class="text-center text-xl">NO DATA, Loading ...</h1>
+                <h1 class="text-center text-xl">Loading ...</h1>
             </div>
         </div>
     </div>
@@ -77,9 +82,11 @@
             this.ws = new WebSocket(`ws://${process.env.VUE_APP_HOST_API}:3000`)
 
             this.ws.onmessage = (event) => {
-                this.tableData = JSON.parse(event.data).reverse()
-                console.log(event.data)
+                if (event.data.length > 0){
+                    this.tableData = JSON.parse(event.data).reverse()
+                }
                 this.loading = false
+                console.log(this.tableData)
             }
         } catch (error) {
             console.error("There was an error fetching the data", error);
@@ -153,6 +160,11 @@
         },
         created() {
             this.fetchData()
+        },
+        watch: {
+            selectedcat() {
+                this.invokeFirst()
+            }
         },
         methods: {
             async fetchData() {

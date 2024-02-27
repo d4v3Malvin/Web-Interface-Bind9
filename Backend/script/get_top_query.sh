@@ -7,7 +7,7 @@ outputsfile="/tmp/temp_top1"
 awk_query=""
 
 if [[ $type == "all" ]]; then
-    awk_query+='$1=="queries" || $1=="query-errors"'
+    awk_query+=''
 elif [[ $type == "success" ]]; then
     awk_query+='$1=="queries"'
 elif [[ $type == "blocked" ]]; then

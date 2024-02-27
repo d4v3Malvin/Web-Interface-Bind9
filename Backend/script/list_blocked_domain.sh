@@ -40,7 +40,7 @@ cat /etc/bind/db.ads.rpz | awk '$4=="0.0.0.0" {print}' >> $outputfile
 
 sort_and_insert 'ads'
 
-cat $tempfile
+cat $tempfile | grep -v '^*'
 
 rm $tempfile
 rm $outputfile

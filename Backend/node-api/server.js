@@ -28,50 +28,53 @@ wss.on('connection', (ws,req) => {
     const fileStream = fs.createReadStream(logpath);
     fileStream.on('data', (data) => {
         var decoder = new StringDecoder('utf8')
-        list_data = decoder.write(data)
-        let object = list_data.split('|')
+        
+        if (data != ""){
+            list_data = decoder.write(data)
+            let object = list_data.split('|')
 
-        for(const value of object){
+            for(const value of object){
 
-            let object = value.split(',')
+                let object = value.split(',')
 
-            let waktu = new String(object[2])
-            let times = waktu.split(':')
-            let tanggal = String(object[1]).split('-')
-            let date = new Date()
-            // since januari are count as 0
-            date.setUTCMonth(tanggal[1]-1,tanggal[0])
-            date.setUTCFullYear(tanggal[2])
-            date.setUTCHours(times[0],times[1],times[2])
-            let datetime = date.toLocaleDateString('ID', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                timeZone: 'Asia/Jakarta',
-                hour12: false,
-            }).toString().split(',')
+                let waktu = new String(object[2])
+                let times = waktu.split(':')
+                let tanggal = String(object[1]).split('-')
+                let date = new Date()
+                // since januari are count as 0
+                date.setUTCMonth(tanggal[1]-1,tanggal[0])
+                date.setUTCFullYear(tanggal[2])
+                date.setUTCHours(times[0],times[1],times[2])
+                let datetime = date.toLocaleDateString('ID', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    timeZone: 'Asia/Jakarta',
+                    hour12: false,
+                }).toString().split(',')
 
-            let time = String(datetime[1]).split('.')
+                let time = String(datetime[1]).split('.')
 
-            let log = {
-                type: object[0].replace('\n','').toString(),
-                date: datetime[0].toString(),
-                time: time[0] + ":" + time[1] + ":" + time[2],
-                ip_source: String(object[3]),
-                domain: String(object[4]),
-                dns_type: String(object[5]),
-                note: object[6] || 'none'
+                let log = {
+                    type: object[0].replace('\n','').toString(),
+                    date: datetime[0].toString(),
+                    time: time[0] + ":" + time[1] + ":" + time[2],
+                    ip_source: String(object[3]),
+                    domain: String(object[4]),
+                    dns_type: String(object[5]),
+                    note: object[6] || 'none'
+                }
+                json_message.push(log)
             }
 
-            json_message.push(log)
+            json_message = json_message.filter(data => data.type.length > 0)
         }
     });
 
     fileStream.on('end', () => {
-        json_message = json_message.filter(data => data.type.length > 0)
         ws.send(JSON.stringify(json_message));
     })
     

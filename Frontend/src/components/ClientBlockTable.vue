@@ -17,12 +17,17 @@
                                 <th class="table-cell">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="ListBlockedIP.length > 0" >
                             <tr class="table-row w-full" v-for="data in filteredPageData" :key="data">
                                 <td class="table-cell w-50">{{ data }}</td>
                                 <td class="table-cell w-50">
                                     <button id="deletebutton" @click="remove_block(data)" class="px-2 bg-red-500 my-1 text-white">Delete</button>
                                 </td>
+                            </tr>
+                        </tbody>
+                        <tbody v-else>
+                            <tr class="table-row w-full">
+                                <td class="table-cell" colspan="2">No Blocked Client</td>
                             </tr>
                         </tbody>
                     </table>
@@ -34,8 +39,8 @@
                         <div v-for="pagenumber in pageNumbers" :key="pagenumber">
                             <button class="py-1 px-2 mx-1 border" :class="currentpage == pagenumber ? 'border-black bg-white text-black' : 'border-white text-white'" :hidden="pagenumber > totalpagefilter"  @click="jumppage(pagenumber)" >{{ pagenumber }}</button>
                         </div>
-                        <button class="py-1 px-2 mx-1 border border-white text-white" @click="nextpage" :disabled="currentpage === totalpage">Next</button>
-                        <button class="py-1 px-2 mx-1 border border-white text-white" @click="invokeLast()" :disabled="currentpage === this.totalpage">Last</button>
+                        <button class="py-1 px-2 mx-1 border border-white text-white" @click="nextpage" :disabled="currentpage >= totalpage">Next</button>
+                        <button class="py-1 px-2 mx-1 border border-white text-white" @click="invokeLast()" :disabled="currentpage >= this.totalpage">Last</button>
                     </div>
                 </div>
             </div>

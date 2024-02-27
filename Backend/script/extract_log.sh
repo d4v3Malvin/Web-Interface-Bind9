@@ -55,7 +55,17 @@ extract () {
 		if [[ $line =~ "queries"  ]]; then
 					query=$( echo $line | cut -d " " -f 10 )
 					type=$( echo $line | cut -d " " -f 12 )
-					echo $type_log,$date,$times,$client,$query,$type'|' >> $outputsfile
+					status="ok"
+					while read lines; do
+						if [[ $query == $lines ]]; then
+							status="no"
+							break
+						fi
+					done < /tmp/tmp_block_123
+
+					if [[ $status == "ok" ]]; then 
+						echo $type_log,$date,$times,$client,$query,$type'|' >> $outputsfile
+					fi
 		elif [[ $line =~ "query-errors"  ]]; then
 			query=$( echo $line | cut -d " " -f 8 )
 			error_message=$(echo $line | cut -d ":" -f 6 | grep -oP '\((.*?)\)')
@@ -68,6 +78,8 @@ extract () {
 	done < $file
 }
 
+/home/webScript/list_blocked_domain.sh | cut -d ',' -f 1 > /tmp/tmp_block_123
+
 if [ ! -e "$outputsfile" ]; then 
 	touch "$outputsfile"
 fi
@@ -77,6 +89,7 @@ cp /var/log/bind/query.log /var/log/bind/temp_query.log
 extract
 
 rm /var/log/bind/temp_query.log
+rm /tmp/tmp_block_123
 
 # clear the query.log so log not overlapping
 cat /dev/null > /var/log/bind/query.log
