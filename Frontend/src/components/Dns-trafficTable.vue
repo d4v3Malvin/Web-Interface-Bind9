@@ -2,22 +2,23 @@
     <div class="w-full min-h-full">
         <h1 class="text-2xl text-center">BIND DNS History Log</h1>
         <div class="w-full h-auto">
-            
             <div v-if="isrefresh">
                 <h1 class="text-white text-2xl">Refreshing...</h1>
             </div>
             <div class="flex-row w-full" v-if="!loading">
                 <div class="w-full flex justify-center">
-                    <div class="w-4/5 h-min grid grid-cols-5 py-5">
-                        <div class="col-span-2">
+                    <div class="w-4/5 h-min grid grid-cols-8 py-5">
+                        <div class="flex flex-col justify-center items-center col-span-2">
                             <Multiselect class="w-full" v-model="selectedcat" :options="category" />
                         </div>
-                        <div class="text-center flex flex-col justify-center items-center">Search :</div>
-                        <div class="flex flex-col justify-center items-center">
-                            <input class="w-3/4 h-3/5" type="text" v-model="searchQuery">
+                        <div class="col-span-3">
+                            <div id="test"></div>
+                        </div>
+                        <div class="flex flex-col justify-center items-center col-span-2">
+                            <input class="w-4/5 h-3/5 text-l" placeholder="Search" name="query" type="text" v-model="searchQuery">
                         </div>
                         <div class="flex flex-col justify-center items-center">
-                            <button @click="refreshlist()" class="w-full h-3/4 w-3/4 bg-purple-200">Refresh</button>
+                            <button @click="refreshlist()" class="h-3/4 w-3/4 bg-purple-200 rounded-md">Refresh</button>
                         </div>
                     </div>
                 </div>
@@ -68,7 +69,6 @@
 </template>
 
 <script>
-
     import axios from 'axios'
     import Multiselect from '@vueform/multiselect'
 
@@ -86,7 +86,6 @@
                     this.tableData = JSON.parse(event.data).reverse()
                 }
                 this.loading = false
-                console.log(this.tableData)
             }
         } catch (error) {
             console.error("There was an error fetching the data", error);
@@ -127,9 +126,6 @@
                 const start = (this.currentpage - 1) * this.totalitem
                 const end = start + this.totalitem
 
-                // this.gettopsuccessdomain()
-                // this.gettopblockeddomain()
-
                 return this.datafilter().slice(start,end)
             },
             pageNumbers() {
@@ -158,7 +154,7 @@
         },
         mounted() {
         },
-        created() {
+        created() {1
             this.fetchData()
         },
         watch: {

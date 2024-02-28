@@ -3,7 +3,7 @@
         <div class="w-full"/>
         <div class="col-span-3">
             <button id="addbutton" @click="openmodal()" class="py-1 px-2 bg-green-300 mt-2">Add Client Block</button>
-            <div id="div-modal" class="py-3 insert-div mt-2 border border-black">
+            <div id="div-modal" class="py-3 insert-div mt-2 rounded-md" style="background-color: #d8d8d8">
                 <form @submit.prevent="add_client_block" method="post">
                     <div class="w-full grid grid-cols-3">
                         <div class="col-span-2 text-left label-input">

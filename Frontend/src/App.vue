@@ -1,6 +1,6 @@
 <template class="overflow-scroll">
   <div class="w-full min-h-screen bg-gradient-to-r from-indigo-500 to-indigo-300">
-    <div class="w-full h-full grid grid-cols-8">
+    <div class="w-full h-full grid grid-cols-6">
       <div class="min-h-screen h-auto col-span-1 sidebar">
         <div class="w-full sidebar-menu">
           <router-link to="/" :active-class="'bg-gray-100 text-black'" class="link" >Home</router-link>
@@ -27,7 +27,7 @@
           <router-link to="/setting" :active-class="'bg-gray-100 text-black'" class="link">DNS Setting</router-link>
         </div>
       </div>
-      <div class="col-span-7">
+      <div class="col-span-5">
         <router-view class="pt-5"/>
       </div>
     </div>
@@ -51,6 +51,8 @@ nav {
 .sidebar {
   font-weight: bold;
   color: white;
+  text-align: start;
+  /* padding-left: calc(10%); */
   background-color: #413f54;
 }
 
@@ -63,6 +65,9 @@ nav a {
   display: inline-block;
   width: 100%;
   height: 100%;
+  padding-left: calc(10%);
+  padding-top: calc(5%);
+  padding-bottom: calc(5%);
 }
 
 nav a.router-link-exact-active {

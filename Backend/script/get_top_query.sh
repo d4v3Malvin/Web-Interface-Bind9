@@ -12,6 +12,8 @@ elif [[ $type == "success" ]]; then
     awk_query+='$1=="queries"'
 elif [[ $type == "blocked" ]]; then
     awk_query+='$1=="rpz"'
+elif [[ $type == "failed" ]]; then
+    awk_query+='$1=="query-errors"'
 fi
 
 if [ ! -e "$outputsfile" ]; then 
