@@ -54,7 +54,7 @@ if [ -d "/var/log/bind" ]; then
     fi
 fi
 echo "Finished DNS log directory"
-# $script_path/complete_add_domain.sh db.ads.rpz doubleclick.net 
+# $script_path/complete_Blocked_Domain_add.sh db.ads.rpz doubleclick.net 
 # Setup dnscrypt-proxy
 echo "Setting up dnscrypt-proxy"
 sed -i -e "s/listen_addresses = .*/listen_addresses = \['127.0.0.1:5353'\]/" "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"

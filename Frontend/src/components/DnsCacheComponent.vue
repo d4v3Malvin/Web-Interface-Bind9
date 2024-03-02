@@ -8,10 +8,10 @@
                 </div>
                 <div>
                     <div class="grid grid-cols-4 p-5">
-                        <div><button @click="fetchData()" class="border py-2 px-7 bg-purple-200">Refresh</button></div>
+                        <div><button @click="fetchData()" class="border py-2 px-7 bg-purple-200 rounded-md">Refresh</button></div>
                         <div class="text-xl">Search :</div>
                         <div><input class="w-9/12 border border-black appearance-none" type="text" v-model="searchQuery"></div>
-                        <div><button @click="flushCache()" class="border py-2 px-7 bg-red-100">Flush Cache</button></div>
+                        <div><button @click="flushCache()" class="border py-2 px-7 bg-red-100 rounded-md">Flush Cache</button></div>
                     </div>
                 </div>
                 <div class="w-full">

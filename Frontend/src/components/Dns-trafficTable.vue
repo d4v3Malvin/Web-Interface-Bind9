@@ -344,9 +344,14 @@
             },
             checkval(){
                 let dates = daterangeone.getDates('dd/mm/yyyy')
-                this.datestart = dates[0]
-                this.datefinish = dates[1]
-                this.refreshlist()
+                if (dates[0] && dates[1]){
+                    this.datestart = dates[0]
+                    this.datefinish = dates[1]
+                    this.refreshlist()
+                }
+                else{
+                    alert("Input cant be empty")
+                }
             }
         },
         beforeUnmount() {

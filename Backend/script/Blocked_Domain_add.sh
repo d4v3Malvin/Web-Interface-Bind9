@@ -27,3 +27,5 @@ elif [ "$domain_status" == "failed" ]; then
 else
     echo "$domain_status"
 fi
+
+rndc reload

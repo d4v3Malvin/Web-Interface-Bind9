@@ -8,7 +8,7 @@ module.exports = function (app) {
     })
 
     app.get('/list-dns-block', (req,res) => {
-        const data = execSync('/home/webScript/list_blocked_domain.sh')
+        const data = execSync('/home/webScript/Blocked_Domain_list.sh')
         var decoder = new StringDecoder('utf8')
         let list = decoder.write(data).split('\n')
         list = list.filter(value => Object.keys(value).length > 0)
@@ -18,7 +18,7 @@ module.exports = function (app) {
     app.post('/add-dns-block', (req,res) => {
         var { domain, type } = req.body;
         var dns_type = type === 'ads' ? 'db.ads.rpz' : 'db.blocked.rpz'
-        const data = execSync('/home/webScript/add_domain.sh '+ dns_type + ' ' + domain)
+        const data = execSync('/home/webScript/Blocked_Domain_add.sh '+ dns_type + ' ' + domain)
         var decoder = new StringDecoder('utf8')
         res.json(decoder.write(data))
     })
@@ -27,13 +27,13 @@ module.exports = function (app) {
         const { type } = req.query
         const domain = req.params.domain
         var dns_type = type === 'ads' ? 'db.ads.rpz' : 'db.blocked.rpz'
-        const data = execSync('/home/webScript/remove_domain_block.sh /etc/bind/' + dns_type + ' ' + domain)
+        const data = execSync('/home/webScript/Blocked_Domain_delete.sh /etc/bind/' + dns_type + ' ' + domain)
         var decoder = new StringDecoder('utf8')
         res.json(decoder.write(data).split('\n')[0] + " from " + type)
     })
 
     app.get('/get-dns-traffic', (req,res) => {
-        const process = spawn('/home/webScript/extract_log.sh', ['/home/back_api/dns-log'])
+        const process = spawn('/home/webScript/Dns_Log_list.sh', ['/home/back_api/dns-log'])
         process.stdout.on('end', (data) => {
             res.json("log sudah diambil")
         })
@@ -44,7 +44,7 @@ module.exports = function (app) {
 
         var decoder = new StringDecoder('utf8')
 
-        const result = execFileSync('/home/webScript/get_top_query.sh', [process.env.LOG_PATH,top_type]);  
+        const result = execFileSync('/home/webScript/Top_Query_list.sh', [process.env.LOG_PATH,top_type]);  
 
         let datalist = decoder.write(result).trim()
 
@@ -85,7 +85,7 @@ module.exports = function (app) {
             size: 0,
             cache: []
         }
-        const cachelist = execSync('/home/webScript/extract_dns_cache.sh')
+        const cachelist = execSync('/home/webScript/Dns_Cache_list.sh')
 
         var decoder = new StringDecoder('utf8')
 
@@ -139,7 +139,7 @@ module.exports = function (app) {
     })
 
     app.get('/get-ip-block', (req,res) => {
-        const output = execSync('/home/webScript/get_list_blocked_ip.sh')
+        const output = execSync('/home/webScript/Allow_Client_list.sh')
         var decoder = new StringDecoder('utf8')        
         const cleaned = decoder.write(output).trim().split('\n')
 
@@ -159,7 +159,7 @@ module.exports = function (app) {
     app.post('/add-ip-block', (req,res) => {
         var { ip, blocks } = req.body;
         var ip_address = ip + '/' + blocks + ";"
-        const output = execSync('/home/webScript/add_client.sh '+ ip_address)
+        const output = execSync('/home/webScript/Allow_Client_add.sh '+ ip_address)
         var decoder = new StringDecoder('utf8')
         res.json(decoder.write(output))
     })
@@ -168,7 +168,7 @@ module.exports = function (app) {
         const { block } = req.query
         const ip = req.params.ip
         let ips = ip + "/" + block + ";"
-        const output = execSync('/home/webScript/delete_client.sh ' + ips)
+        const output = execSync('/home/webScript/Allow_Client_delete.sh' + ips)
         var decoder = new StringDecoder('utf8')
         res.json(decoder.write(output))
     })

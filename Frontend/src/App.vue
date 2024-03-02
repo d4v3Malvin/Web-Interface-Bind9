@@ -6,10 +6,7 @@
           <router-link to="/" :active-class="'bg-gray-100 text-black'" class="link" >Home</router-link>
         </div>
         <div class="w-full sidebar-menu">
-          <router-link to="/about" :active-class="'bg-gray-100 text-black'" class="link">About</router-link>
-        </div>
-        <div class="w-full sidebar-menu">
-          <router-link to="/client-block" :active-class="'bg-gray-100 text-black'" class="link">Client Block</router-link>
+          <router-link to="/client-block" :active-class="'bg-gray-100 text-black'" class="link">Allowed Client</router-link>
         </div>
         <div class="w-full sidebar-menu">
           <router-link to="/stats" :active-class="'bg-gray-100 text-black'" class="link">DNS Stats</router-link>

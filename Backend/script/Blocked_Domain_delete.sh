@@ -7,3 +7,5 @@ file_contents=$(cat $path)
 if [[ ! $file_contents =~ "$2"   ]]; then
 	echo "domain $2 have been deleted"
 fi
+
+rndc reload

@@ -2,7 +2,7 @@
     <div class="w-full grid grid-cols-5">
         <div class="w-full"/>
         <div class="col-span-3">
-            <button id="addbutton" @click="openmodal()" class="py-1 px-2 bg-green-300 mt-2">Add Client Block</button>
+            <button id="addbutton" @click="openmodal()" class="py-1 px-2 bg-green-300 mt-2 rounded-md">Add Allowed Client</button>
             <div id="div-modal" class="py-3 insert-div mt-2 rounded-md" style="background-color: #d8d8d8">
                 <form @submit.prevent="add_client_block" method="post">
                     <div class="w-full grid grid-cols-3">
@@ -57,7 +57,7 @@
                     modal.style.display = 'none'
                     button.innerHTML = 'Add Client Block'
                     alert(response.data)
-                    this.$parent.$refs.clientBlockTable.fetchData()
+                    this.$parent.$refs.AllowedClientTable.fetchData()
                 })
                 .catch(error => {
                     alert(error)

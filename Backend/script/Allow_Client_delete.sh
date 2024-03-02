@@ -12,3 +12,5 @@ if sed -n '/acl "allowed" {/,/}/p' /etc/bind/named.conf.options | grep -q "$ip";
 else 
     echo "IP doesnt exist."
 fi
+
+rndc reload

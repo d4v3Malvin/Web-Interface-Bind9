@@ -1,5 +1,4 @@
 acl "allowed" {
-	116.206.0.0/16;
 };
 
 options {
@@ -15,7 +14,8 @@ options {
 	// the all-0's placeholder.
 
 	recursion yes;
-	allow-query { any; };
+	allow-query { allowed; };
+	allow-recursion { allowed; };
 	forwarders {
 	    127.0.0.1 port 5353;
 	};
