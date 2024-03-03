@@ -24,12 +24,17 @@
                                 <th class="table-cell">Address</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="filteredPageData.length > 0">
                             <tr class="table-row w-full" v-for="data in filteredPageData" :key="data">
                                 <td class="table-cell w-50 px-2">{{ data.domain }}</td>
                                 <td class="table-cell w-50 px-2">{{ data.ttl }}</td>
                                 <td class="table-cell w-50 px-2">{{ data.type }}</td>
                                 <td class="table-cell w-50 px-2">{{ data.address }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody v-else>
+                            <tr class="table-row w-full">
+                                <td class="table-cell" colspan="4">No DNS Cache yet</td>
                             </tr>
                         </tbody>
                     </table>

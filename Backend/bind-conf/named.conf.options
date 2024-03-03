@@ -31,6 +31,7 @@ options {
 	response-policy { zone "ads.rpz.zone"; zone "blocked.rpz.zone"; };
 	
 	dump-file  "/var/log/bind/cache_dump.db";
+	statistics-file "/var/log/bind/bind.stats";
 };
 
 zone "ads.rpz.zone" {
