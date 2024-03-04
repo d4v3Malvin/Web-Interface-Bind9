@@ -32,6 +32,10 @@ options {
 	
 	dump-file  "/var/log/bind/cache_dump.db";
 	statistics-file "/var/log/bind/bind.stats";
+
+	rate-limit {
+		responses-per-second 10;
+	};
 };
 
 zone "ads.rpz.zone" {

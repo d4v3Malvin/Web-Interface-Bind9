@@ -96,6 +96,7 @@ module.exports = function (app) {
             if (value.toString().length > 0){
                 let valuereplaced = value.replace(/\t/g," ")
                 valuereplaced = valuereplaced.replace("  "," ")
+                console.log(valuereplaced)
                 let arrayofvalue = valuereplaced.toString().split(' ')
                 let first = arrayofvalue[0].toString()
                 let address = ""
@@ -112,7 +113,12 @@ module.exports = function (app) {
                     ttl = arrayofvalue[0].toString()
                     requestType = arrayofvalue[1].toString()
                     if (requestType == "HTTPS"){
-                        address = arrayofvalue[5].split('=')[1]
+                        if (arrayofvalue[3] == '.'){
+                            address = '.'
+                        }
+                        else{
+                            address = arrayofvalue[5].split('=')[1]
+                        }
                     }
                     else{
                         address = arrayofvalue[2].toString()
@@ -131,9 +137,24 @@ module.exports = function (app) {
             }
         }
 
-        const size = execSync('du -sh /var/log/bind/cache_dump.db')
+        const size = execSync('/home/webScript/Memory_Dns_list.sh')
 
-        jsonmessage.size = decoder.write(size).split('\t')[0]
+        if (size / 1000 > 1){
+            if (size / 1000000 > 1){
+                if (size / 1000000000 > 1){
+                    jsonmessage.size = size / 1000000000 + " gb"
+                }
+                else{
+                    jsonmessage.size = size / 1000000 + " mb"
+                }
+            }
+            else{
+                jsonmessage.size = size / 1000 + " kb"
+            }
+        }
+        else {
+            jsonmessage.size = size + " b"
+        }
 
         res.json(jsonmessage)
     })

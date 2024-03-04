@@ -6,22 +6,20 @@
             <div id="div-modal" class="py-3 insert-div mt-2 rounded-md" style="background-color: #d8d8d8">
                 <form @submit.prevent="add_client_block" method="post">
                     <div class="w-full grid grid-cols-3">
-                        <div class="col-span-2 text-left label-input">
-                            <label>IP Address : </label>
-                        </div>
-                        <div class="grid grid-cols-6">
-                            <div class="col-span-4">
+                        <div class="text-xl text-center col-span-3">IP Address / Block</div>
+                        <div class="w-full col-span-3 flex flex-row justify-center">
+                            <div>
                                 <input type="text" v-model="clientData.ip" class="w-full">
                             </div>
-                            <div>
+                            <div class="ps-3 w-auto">
                                 /
                             </div>
-                            <div>
-                                <input type="text" v-model="clientData.blocks" class="w-4/5 me-5">
+                            <div class="w-1/6">
+                                <input type="text" v-model="clientData.blocks" class="w-3/5">
                             </div>
                         </div>
                         <div class="col-span-3 py-3">
-                            <button class="border bg-green-400 px-2 py-1 " type="submit">Submit</button>
+                            <button class="border bg-green-400 px-2 py-1" type="submit">Submit</button>
                         </div>
                     </div>
                 </form>

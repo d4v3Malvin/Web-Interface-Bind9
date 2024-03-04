@@ -4,7 +4,7 @@
             <div class="w-full"/>
             <div class="col-span-3">
                 <div class="w-full pt-5">
-                    <h1 class="text-center">Cache Size : {{ cacheSize }}b</h1>
+                    <h1 class="text-center">Cache Size : {{ cacheSize }}</h1>
                 </div>
                 <div>
                     <div class="grid grid-cols-4 p-5">
