@@ -147,16 +147,24 @@
             async getTopDomain(){
                 let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/all`)
                 this.all_domain = response.data
-                this.generate_chart("all_domain_stats",this.all_domain)
+                if (this.all_domain.length > 0){
+                    this.generate_chart("all_domain_stats",this.all_domain)
+                }
                 response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/success`)
                 this.success_domain = response.data
-                this.generate_chart("success_domain_stats",this.success_domain)
+                if (this.success_domain.length > 0){
+                    this.generate_chart("success_domain_stats",this.success_domain)
+                }
                 response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/blocked`)
                 this.blocked_domain = response.data
-                this.generate_chart("blocked_domain_stats",this.blocked_domain)
+                if (this.blocked_domain.length > 0){
+                    this.generate_chart("blocked_domain_stats",this.blocked_domain)
+                }
                 response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/failed`)
                 this.failed_domain = response.data
-                this.generate_chart("failed_domain_stats",this.failed_domain)  
+                if (this.failed_domain.length > 0){
+                    this.generate_chart("failed_domain_stats",this.failed_domain)
+                }
             },
             async generate_chart(id,datalist){
                 const data = datalist

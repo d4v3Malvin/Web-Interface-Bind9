@@ -16,18 +16,18 @@ module.exports = function (app) {
     })
 
     app.post('/add-dns-block', (req,res) => {
-        var { domain, type } = req.body;
+        var { domain, type, record } = req.body;
         var dns_type = type === 'ads' ? 'db.ads.rpz' : 'db.blocked.rpz'
-        const data = execSync('/home/webScript/Blocked_Domain_add.sh '+ dns_type + ' ' + domain)
+        const data = execSync('/home/webScript/Blocked_Domain_add.sh '+ dns_type + ' ' + domain + ' ' + record)
         var decoder = new StringDecoder('utf8')
         res.json(decoder.write(data))
     })
     
     app.get('/delete-dns-block/:domain' ,(req,res) => {
-        const { type } = req.query
-        const domain = req.params.domain
+        const { type, record } = req.query
+        const { domain } = req.params
         var dns_type = type === 'ads' ? 'db.ads.rpz' : 'db.blocked.rpz'
-        const data = execSync('/home/webScript/Blocked_Domain_delete.sh /etc/bind/' + dns_type + ' ' + domain)
+        const data = execSync('/home/webScript/Blocked_Domain_delete.sh /etc/bind/' + dns_type + ' ' + domain + ' ' + record)
         var decoder = new StringDecoder('utf8')
         res.json(decoder.write(data).split('\n')[0] + " from " + type)
     })

@@ -25,7 +25,7 @@
                                 <td class="table-cell w-50">{{ data.split(',')[1] }}</td>
                                 <td class="table-cell w-50">{{ data.split(',')[2] }}</td>
                                 <td class="table-cell w-50">
-                                    <button id="deletebutton" @click="remove_block(data.split(',')[0],data.split(',')[2])" class="px-2 bg-red-500 my-1 text-white rounded-md">Delete</button>
+                                    <button id="deletebutton" @click="remove_block(data.split(',')[0],data.split(',')[2],data.split(',')[1])" class="px-2 bg-red-500 my-1 text-white rounded-md">Delete</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -169,9 +169,9 @@
                 start = max - a
                 this.jumppage(this.totalpage)
             },
-            remove_block(domain, type){
+            remove_block(domain, type, record){
                 if (confirm("Are You Sure you want to remove this domain from block?")){
-                    axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/delete-dns-block/${domain}?type=${type}`)
+                    axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/delete-dns-block/${domain}?type=${type}&record=${record}`)
                     .then(response => {
                         alert(response.data)
                         this.fetchData()

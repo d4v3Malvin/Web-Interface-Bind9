@@ -6,19 +6,25 @@
             <div id="div-modal" class="py-3 insert-div mt-2 rounded-md" style="background-color: #d8d8d8">
                 <form @submit.prevent="add_domain_block" method="post">
                     <div class="w-full grid grid-cols-3">
-                        <div class="col-span-2 text-left label-input">
-                            <label for="domain">Domain : </label>
+                        <div class="w-full col-span-3 flex">
+                            <div class="w-1/2">
+                                <label for="domain_field" class="text-s">Domain</label><br>
+                                <input type="text" v-model="domaindata.domain" id="domain_field" class="w-4/5">
+                            </div>
+                            <div class="w-1/2">
+                                <label for="type" class="text-s">Block Type</label>
+                                <select v-model="domaindata.type" id="type" class="w-4/5 text-center">
+                                    <option value="ads">ADS</option>
+                                    <option value="dns">Domain</option>
+                                </select>
+                            </div>
                         </div>
-                        <div>
-                            <input type="text" v-model="domaindata.domain" id="domain_field" class="w-4/5">
-                        </div>
-                        <div class="col-span-2 text-left label-input pt-2">
-                            <label for="type">Type : </label>
-                        </div>
-                        <div class="pt-2">
-                            <select v-model="domaindata.type" id="" class="w-4/5 text-center">
-                                <option value="ads">ADS</option>
-                                <option value="dns">Domain</option>
+                        <div class="w-full col-span-3 flex flex-col justify-center items-center">
+                            <label for="type" class="text-s">Record Type</label>
+                            <select v-model="domaindata.record" id="type" class="w-2/5 text-center">
+                                <option value="A">A</option>
+                                <option value="AAAA">AAAA</option>
+                                <option value="CNAME">CNAME</option>
                             </select>
                         </div>
                         <div class="col-span-3 py-3">
@@ -39,6 +45,7 @@
             return {
                 domaindata: {
                     domain: '',
+                    record:'A',
                     type: 'dns'
                 }
             }

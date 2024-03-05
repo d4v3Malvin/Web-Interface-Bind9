@@ -43,7 +43,7 @@
                                 <td class="table-cell p-1 ">{{ data.time }}</td>
                                 <td class="table-cell p-1 ">{{ data.note }}</td>
                                 <td class="table-cell p-1 ">
-                                    <button class="w-2/5 mx-1 py-0.5 bg-green-700 text-white rounded-md" @click="add_domain_block(data.domain)" >Domain</button>
+                                    <button class="w-2/5 mx-1 py-0.5 bg-green-700 text-white rounded-md" @click="add_domain_block(data.domain,data.dns_type)" >Domain</button>
                                     <button class="w-2/5 mx-1 py-0.5 bg-blue-700 text-white rounded-md" @click="add_client_block(data.ip_source)">Client</button>
                                 </td>
                             </tr>
@@ -315,10 +315,11 @@
                     console.error("There was an error fetching the data", error);
                 }
             },
-            add_domain_block(domain) {
+            add_domain_block(domain,record) {
                 let domaindata = {
                     domain: domain,
-                    type: 'domain'
+                    type: 'domain',
+                    record: record,
                 }
                 if (confirm("Are you sure you want to block this domain?")){
                     axios.post(`http://${process.env.VUE_APP_HOST_API}:3000/add-dns-block`, domaindata)

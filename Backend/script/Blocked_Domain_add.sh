@@ -1,18 +1,18 @@
 #!/bin/bash
 
+record=$3
 domain=$2
 filename=$1
 
 function add_domain()
 {
-    file_contents=$(cat $1)
     domain=$2
 
-    if [[ ! $file_contents =~ "$domain	IN	CNAME	0.0.0.0"   ]]; then
-        sh -c "echo '$domain	IN	CNAME	0.0.0.0' >> $1"
-        echo "success"
-    else
+    if sed -n "/$domain\\tIN\\t$record\\t0.0.0.0/p" $1 | grep -q .; then
         echo "failed"
+    else
+        sh -c "echo '$domain\tIN\t$record\t0.0.0.0' >> $1"
+        echo "success"
     fi
 }
 
@@ -28,4 +28,4 @@ else
     echo "$domain_status"
 fi
 
-rndc reload
+rndc reload > /dev/null
