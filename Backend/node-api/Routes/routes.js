@@ -198,4 +198,36 @@ module.exports = function (app) {
         execSync('rndc flush')
         res.send("cache sudah terhapus")
     })
+    app.post('/login', (req,res) => {
+        var { username, password } = req.body
+        let code = 0
+        let message = ""
+        const result = execSync('cat /home/back_api/login_cred')
+        var decoder = new StringDecoder('utf8')
+        let array = decoder.write(result).split('\n')
+        console.log(username + " " + password)
+        console.log(atob(atob(array[0])))
+        console.log(atob(atob(array[1])))
+        if (atob(atob(array[0])).trim() == username.trim()) {
+            if(atob(atob(array[1])).trim() == password.trim()) {
+                code = 200
+                message = "Success Login"
+            }
+            else{
+                code = 400
+                message = "Password is not correct"
+            }
+        }
+        else{
+            code = 300
+            message = "Username is not correct"
+        }
+
+        const jsonmessage = {
+            code: code,
+            message: message
+        }
+
+        res.json(jsonmessage)
+    })
 }

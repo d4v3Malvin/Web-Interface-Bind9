@@ -12,21 +12,26 @@ import AllowedClientView from "../views/AllowedClientView.vue"
 
 import dnsSetting from "../views/SettingView.vue"
 
+import loginForm from "../views/LoginView.vue"
+
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta: { requestLogin: true }
   },
   {
     path: '/client-block',
     name: 'Client Block',
-    component: AllowedClientView
+    component: AllowedClientView,
+    meta: { requestLogin: true }
   },
   {
     path: '/domain-block',
     name: 'Domain Block',
-    component: domainblockview
+    component: domainblockview,
+    meta: { requestLogin: true }
   },
   // {
   //   path: '/about',
@@ -39,28 +44,51 @@ const routes = [
   {
     path: '/dns-log',
     name: 'DNS Log',
-    component: DnsLogView
+    component: DnsLogView,
+    meta: { requestLogin: true }
   },
   {
     path: '/dns-cache',
     name: 'DNS Cache',
-    component: dnscache
+    component: dnscache,
+    meta: { requestLogin: true }
   },
   {
     path: '/stats',
     name: 'DNS Statistics',
-    component: dnsstats
+    component: dnsstats,
+    meta: { requestLogin: true }
   },
   {
     path: '/setting',
     name: 'DNS Setting',
-    component: dnsSetting
+    component: dnsSetting,
+    meta: { requestLogin: true }
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: loginForm,
+    meta: { islogin: true }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const userCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('user='))
+  if (to.meta.requestLogin && !userCookie){
+    next('/login')
+  }
+  else if (to.meta.islogin && userCookie){
+    next(from.path)
+  }
+  else{
+    next()
+  }
 })
 
 export default router

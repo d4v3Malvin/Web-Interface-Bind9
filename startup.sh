@@ -77,3 +77,6 @@ systemctl daemon-reload
 systemctl start node_api
 systemctl enable node_api
 echo "API Server setup finished"
+# Creating username and password for website.
+echo WVdSdGFXNEsK > $web_path/login_cred
+echo Ym1sdFpHRUsK >> $web_path/login_cred
