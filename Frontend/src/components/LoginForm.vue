@@ -4,7 +4,7 @@
             Web Interface BIND9 login
         </div>
         <div class="w-full flex flex-row justify-center">
-            <div class="py-3 rounded-md w-4/5" style="background-color: #d8d8d8">
+            <div class="py-3 rounded-md w-1/5" style="background-color: #d8d8d8">
                 <form @submit.prevent="login" method="post">
                     <div class="w-full grid grid-cols-3">
                         <div class="w-full col-span-3">

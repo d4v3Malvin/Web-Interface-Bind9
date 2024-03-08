@@ -39,12 +39,13 @@ module.exports = function (app) {
         })
     })
 
-    app.get('/get-top-query/:type', (req,res) => {
+    app.get('/get-top-query/:type/:time', (req,res) => {
         const top_type = req.params.type
+        const time = req.params.time
 
         var decoder = new StringDecoder('utf8')
 
-        const result = execFileSync('/home/webScript/Top_Query_list.sh', [process.env.LOG_PATH,top_type]);  
+        const result = execFileSync('/home/webScript/Top_Query_list.sh', [process.env.LOG_PATH,top_type,time])
 
         let datalist = decoder.write(result).trim()
 
@@ -69,7 +70,43 @@ module.exports = function (app) {
                 top10.push(querys[i])
             }
 
-            console.log(datalist.length)
+            res.json(top10)
+        }
+        else{
+            res.json([])
+        }
+    })
+
+    app.get('/get-top-client/:time', (req,res) => {
+        const time = req.params.time
+
+        var decoder = new StringDecoder('utf8')
+
+        const result = execFileSync('/home/webScript/Top_Client_list.sh', [process.env.LOG_PATH,time])
+        
+        let datalist = decoder.write(result).trim()
+
+        if (datalist.length > 0){
+            const cleaned = datalist.split("\n")
+
+            let querys = []
+
+            for (const value of cleaned){
+                let query = value.trim().split(' ')
+                let querysatuan = {
+                    count: query[0],
+                    ip: query[1] || ""
+                }
+                querys.push(querysatuan)
+            }
+
+            querys = querys.sort((a,b) => b.count - a.count)
+
+            let top10 = []
+
+            for (let i = 0; i < querys.length && i < 10; i++) {
+                top10.push(querys[i])
+            }
 
             res.json(top10)
         }
