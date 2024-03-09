@@ -67,7 +67,7 @@ extract () {
 						echo $type_log,$date,$times,$client,$query,$type'|' >> $outputsfile
 					fi
 		elif [[ $line =~ "query-errors"  ]]; then
-			query=$( echo $line | cut -d " " -f 8 )
+			query=$( echo $line | cut -d " " -f 8 | sed 's/[()]//g; s/:$//' )
 			error_message=$(echo $line | cut -d ":" -f 6 | grep -oP '\((.*?)\)')
 			echo $type_log,$date,$times,$client,$query,"error","query failed"$error_message'|' >> $outputsfile
 		elif [[ $line =~ "rpz" ]]; then

@@ -65,6 +65,9 @@
                         var modal = document.getElementById('div-modal')
                         modal.style.display = 'none'
                         alert(response.data)
+                        this.domain = ''
+                        this.record = 'A'
+                        this.type = 'dns'
                         this.$parent.$refs.domainBlockTable.fetchData()
                     })
                     .catch(error => {

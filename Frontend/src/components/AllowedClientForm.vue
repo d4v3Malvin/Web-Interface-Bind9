@@ -55,6 +55,8 @@
                     modal.style.display = 'none'
                     button.innerHTML = 'Add Client Block'
                     alert(response.data)
+                    this.ip = ''
+                    this.blocks = ''
                     this.$parent.$refs.AllowedClientTable.fetchData()
                 })
                 .catch(error => {

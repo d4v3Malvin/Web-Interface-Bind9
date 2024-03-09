@@ -49,18 +49,6 @@ else
     | sort > $outputsfile 
 fi
 
-# awk -F, -v time_in_second=$(date -d '-30 minutes' +'%s') \
-# "$awk_query"'{
-#     split($2, dates, "-")
-#     split($3, times, ":")
-#     query_time = mktime(dates[3] " " dates[2] " " dates[1] " " times[1] " " times[2] " " times[3])
-#     if (time_in_second - query_time <= 0) {
-#         print $5
-#     }
-# }' "$log_path" \
-# | sed 's/[()]//g; s/:$//' \
-# | sort > $outputsfile
-
 cat $outputsfile | uniq -c > /tmp/tmpfiles1
 
 # Remove all tab in start of line.

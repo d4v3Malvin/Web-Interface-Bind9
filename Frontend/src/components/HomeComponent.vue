@@ -62,7 +62,7 @@
     export default {
         data() {
             return {
-                time: "all",
+                time: "60m",
                 all_client: []
             }
         },

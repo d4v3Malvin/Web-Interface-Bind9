@@ -176,7 +176,7 @@
                 success_domain: [],
                 blocked_domain: [],
                 failed_domain: [],
-                time: 'all',
+                time: '60m',
             }
         },
         mounted() {

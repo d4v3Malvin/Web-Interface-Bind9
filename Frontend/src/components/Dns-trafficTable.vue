@@ -27,24 +27,24 @@
                     </div>
                 </div>
                 <div class="w-full flex justify-center">
-                    <table class="table w-4/5 bg-white text-sm" data-toogle="table">
+                    <table class="table w-4/5 bg-white text-sm " data-toogle="table">
                         <thead class="table-row-group">
                             <tr class="table-row">
-                                <th class="table-cell p-1 text-white" v-for="column in columns" :key=column>{{ column }}</th>
+                                <th class="table-cell p-1 w-auto text-white" v-for="column in columns" :key=column>{{ column }}</th>
                             </tr>
                         </thead>
                         <tbody v-if="datafilter().length > 0">
-                            <tr class="table-row text-wrap" v-for="data in filteredPageData" :key="data">
-                                <td class="table-cell p-1">{{ data.type }}</td>
-                                <td class="table-cell p-1 ">{{ data.domain }}</td>
-                                <td class="table-cell p-1 ">{{ data.ip_source }}</td>
-                                <td class="table-cell p-1 ">{{ data.dns_type }}</td>
-                                <td class="table-cell p-1 ">{{ data.date }}</td>
-                                <td class="table-cell p-1 ">{{ data.time }}</td>
-                                <td class="table-cell p-1 ">{{ data.note }}</td>
-                                <td class="table-cell p-1 ">
-                                    <button class="w-2/5 mx-1 py-0.5 bg-green-700 text-white rounded-md" @click="add_domain_block(data.domain,data.dns_type)" >Domain</button>
-                                    <button class="w-2/5 mx-1 py-0.5 bg-blue-700 text-white rounded-md" @click="add_client_block(data.ip_source)">Client</button>
+                            <tr class="table-row" v-for="data in filteredPageData" :key="data">
+                                <td class="table-cell p-0.5 text-prety">{{ data.type }}</td>
+                                <td class="table-cell p-0.5 whitespace-pre-line break-words text-pretty">{{ data.domain }}</td>
+                                <td class="table-cell p-0.5 text-prety">{{ data.ip_source }}</td>
+                                <td class="table-cell p-0.5 text-prety">{{ data.dns_type }}</td>
+                                <td class="table-cell p-0.5 text-prety">{{ data.date }}</td>
+                                <td class="table-cell p-0.5 text-prety">{{ data.time }}</td>
+                                <td class="table-cell p-0.5 whitespace-pre-line break-all text-prety">{{ data.note }}</td>
+                                <td class="table-cell p-0.5 text-xs ">
+                                    <button class="w-2/5 whitespace-pre-line break-all mx-0.5 py-0.5 bg-green-700 text-white rounded-md" @click="add_domain_block(data.domain,data.dns_type)" >Domain</button>
+                                    <button class="w-2/5 whitespace-pre-line break-all mx-0.5 py-0.5 bg-blue-700 text-white rounded-md" @click="add_client_block(data.ip_source)">Client</button>
                                 </td>
                             </tr>
                         </tbody>
