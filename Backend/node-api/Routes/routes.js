@@ -133,7 +133,6 @@ module.exports = function (app) {
             if (value.toString().length > 0){
                 let valuereplaced = value.replace(/\t/g," ")
                 valuereplaced = valuereplaced.replace("  "," ")
-                console.log(valuereplaced)
                 let arrayofvalue = valuereplaced.toString().split(' ')
                 let first = arrayofvalue[0].toString()
                 let address = ""
@@ -196,6 +195,36 @@ module.exports = function (app) {
         res.json(jsonmessage)
     })
 
+    app.get('/get-rrl-setting', (req,res) => {
+        const output = execSync('/home/webScript/Rate_Limit_setting_list.sh')
+        var decoder = new StringDecoder('utf8')        
+        const cleaned = decoder.write(output).trim()
+
+        let setting = []
+
+        if (decoder.write(output) != ''){
+            let temp = cleaned.split(' ')
+
+            let setup = {
+                setting: temp[0],
+                value: temp[1].replace(';','')
+            }
+            setting.push(setup)
+        }
+
+        res.json(setting)
+    })
+
+    app.get('/set-rrl-setting', (req,res) => {
+        const { limit } = req.query
+
+        const result = execFileSync('/home/webScript/Rate_Limit_setting_update.sh', [limit])
+
+        var decoder = new StringDecoder('utf8')
+
+        res.json(decoder.write(result))
+    })
+
     app.get('/get-ip-block', (req,res) => {
         const output = execSync('/home/webScript/Allow_Client_list.sh')
         var decoder = new StringDecoder('utf8')        
@@ -242,9 +271,6 @@ module.exports = function (app) {
         const result = execSync('cat /home/back_api/login_cred')
         var decoder = new StringDecoder('utf8')
         let array = decoder.write(result).split('\n')
-        console.log(username + " " + password)
-        console.log(atob(atob(array[0])))
-        console.log(atob(atob(array[1])))
         if (atob(atob(array[0])).trim() == username.trim()) {
             if(atob(atob(array[1])).trim() == password.trim()) {
                 code = 200

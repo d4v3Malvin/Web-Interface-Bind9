@@ -27,10 +27,17 @@
                     </div>
                 </div>
                 <div class="w-full flex justify-center">
-                    <table class="table w-4/5 bg-white text-sm " data-toogle="table">
+                    <table class="table w-4/5 bg-white text-sm table-fixed" data-toogle="table">
                         <thead class="table-row-group">
                             <tr class="table-row">
-                                <th class="table-cell p-1 w-auto text-white" v-for="column in columns" :key=column>{{ column }}</th>
+                                <td class="table-cell w-1/12 p-0.5 text-prety">type</td>
+                                <td class="table-cell w-3/12 p-0.5 text-prety">Domain</td>
+                                <td class="table-cell w-1/12 p-0.5 text-prety">Ip Address</td>
+                                <td class="table-cell w-1/12 p-0.5 text-prety">Dns Type</td>
+                                <td class="table-cell w-1/12 p-0.5 text-prety">Date</td>
+                                <td class="table-cell w-1/12 p-0.5 text-prety">Time</td>
+                                <td class="table-cell w-3/12 p-0.5 text-prety">Note</td>
+                                <td class="table-cell w-1/12 py-0.5 text-prety">Add to Block</td>
                             </tr>
                         </thead>
                         <tbody v-if="datafilter().length > 0">
@@ -42,9 +49,13 @@
                                 <td class="table-cell p-0.5 text-prety">{{ data.date }}</td>
                                 <td class="table-cell p-0.5 text-prety">{{ data.time }}</td>
                                 <td class="table-cell p-0.5 whitespace-pre-line break-all text-prety">{{ data.note }}</td>
-                                <td class="table-cell p-0.5 text-xs ">
-                                    <button class="w-2/5 whitespace-pre-line break-all mx-0.5 py-0.5 bg-green-700 text-white rounded-md" @click="add_domain_block(data.domain,data.dns_type)" >Domain</button>
-                                    <button class="w-2/5 whitespace-pre-line break-all mx-0.5 py-0.5 bg-blue-700 text-white rounded-md" @click="add_client_block(data.ip_source)">Client</button>
+                                <td class="table-cell py-0.5 text-xs ">
+                                    <div class="flex flex-row justify-center">
+                                        <div class="w-4/5 grid grid-cols-1 space-y-1 py-1">
+                                            <button class="w-full whitespace-pre-line break-all mx-0.5 py-1 bg-green-700 text-white rounded-md" @click="add_domain_block(data.domain,data.dns_type)" >Domain</button>
+                                            <button class="w-full whitespace-pre-line break-all mx-0.5 py-1 bg-blue-700 text-white rounded-md" @click="add_client_block(data.ip_source)">Client</button>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -106,7 +117,6 @@
         data() {
             return {
                 loading: true,
-                columns: ['type', 'Domain', 'Ip Address', 'Dns Type','Date','Time','Note','Add to block'],
                 isrefresh: false,
                 selectedcat: "queries",
                 category: ['queries','rpz','query-errors'],
