@@ -17,18 +17,21 @@
                     </div>
                 </form>
             </div>
-            <div class="pt-5">
-                <form @submit.prevent="add_domain_block" method="post">
+            <div class="pt-5 mb-5">
+                <form @submit.prevent="change_password" method="post">
                     <div class="w-full flex flex-row justify-center">
                         <div class="w-4/5 py-5 rounded-md" style="background-color: #d8d8d8">
-                            <div class="text-xl pb-5 text-center">
+                            <div class="text-xl text-center">
                                 Change the password
                             </div>
-                            <label for="rrl_field">New Password</label><br>
-                            <input type="text" v-model="new_password" id="rrl_field" class="w-3/5 text-center"><br>
+                            <label for="old_field">Old Password</label><br>
+                            <input type="password" v-model="old_password" id="old_field" class="w-3/5 text-center"><br>
                             <div class="w-full py-1"></div>
-                            <label for="rrl_field">Confirm New Password</label><br>
-                            <input type="text" v-model="new_password" id="rrl_field" class="w-3/5 text-center">
+                            <label for="new_field">New Password</label><br>
+                            <input type="password" v-model="new_password" id="new_field" class="w-3/5 text-center"><br>
+                            <div class="w-full py-1"></div>
+                            <label for="confirm_field">Confirm New Password</label><br>
+                            <input type="password" v-model="confirm_password" id="confirm_field" class="w-3/5 text-center">
                             <div class="w-full pt-5">
                                 <button class="border bg-green-400 px-2 py-1 " type="submit">Submit</button>
                             </div>
@@ -47,7 +50,9 @@
         data() {
             return {
                 rrl_value: 0,
-                new_password: ''
+                old_password: '',
+                new_password: '',
+                confirm_password: ''
             }
         },
         mounted() {
@@ -74,7 +79,34 @@
                         console.log(error)
                     })
                 }
-            }
+            },
+            change_password() {
+                const packages = {
+                    old_pass: this.old_password,
+                    new_pass: this.new_password,
+                    confirm_pass: this.confirm_password
+                }
+
+                if (packages.new_pass.length > 0){
+                    axios.post(`http://${process.env.VUE_APP_HOST_API}:3000/change-password`, packages)
+                    .then(response => {
+                        let result = response.data
+                        alert(result.message)
+                        this.old_password = ""
+                        this.new_password = ""
+                        this.confirm_password = ""
+                    })
+                    .catch(error => {
+                        alert(error)
+                    })
+                }
+                else{
+                    alert("Your new password cant be empty")
+                    this.old_password = ""
+                    this.new_password = ""
+                    this.confirm_password = ""
+                }
+            },
         }
     }
 </script>

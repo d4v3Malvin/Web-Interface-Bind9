@@ -1,5 +1,5 @@
 {
-  "name": "bind-dns-monitor-frontend",
+  "name": "Web-Interface-BIND9",
   "version": "0.1.0",
   "private": true,
   "scripts": {

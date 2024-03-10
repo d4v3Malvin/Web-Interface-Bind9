@@ -4,7 +4,7 @@ const StringDecoder = require('string_decoder').StringDecoder
 
 module.exports = function (app) {
     app.get('/', (req,res) => {
-        res.send("hello")
+        res.send("This is Test API")
     })
 
     app.get('/list-dns-block', (req,res) => {
@@ -284,6 +284,42 @@ module.exports = function (app) {
         else{
             code = 300
             message = "Username is not correct"
+        }
+
+        const jsonmessage = {
+            code: code,
+            message: message
+        }
+
+        res.json(jsonmessage)
+    })
+
+    app.post('/change-password', (req,res) => {
+        var { old_pass, new_pass, confirm_pass } = req.body
+        let code = 0
+        let message = ""
+        var decoder = new StringDecoder('utf8')
+        if (new_pass.toLowerCase() != "admin"){
+            let old_password = execSync('tail -n 1 /home/back_api/login_cred | base64 -d | base64 -d')
+            if (old_pass.trim() == decoder.write(old_password).trim()){
+                if (new_pass == confirm_pass){
+                    const result = execFileSync('/home/webScript/Change_password.sh', [old_pass,new_pass])
+                    code = 200
+                    message = decoder.write(result)
+                }
+                else{
+                    code = 412
+                    message = "New Password are different than Confirm Password."
+                }
+            }
+            else{
+                code = 401
+                message = "Wrong Old Password."
+            }
+        }
+        else{
+            code = 411
+            message = "New Password Cant be this."
         }
 
         const jsonmessage = {
