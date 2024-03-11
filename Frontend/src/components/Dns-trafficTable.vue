@@ -32,11 +32,11 @@
                             <tr class="table-row">
                                 <td class="table-cell w-1/12 p-0.5 text-prety">type</td>
                                 <td class="table-cell w-3/12 p-0.5 text-prety">Domain</td>
-                                <td class="table-cell w-1/12 p-0.5 text-prety">Ip Address</td>
+                                <td class="table-cell w-2/12 p-0.5 text-prety">Ip Address</td>
                                 <td class="table-cell w-1/12 p-0.5 text-prety">Dns Type</td>
                                 <td class="table-cell w-1/12 p-0.5 text-prety">Date</td>
                                 <td class="table-cell w-1/12 p-0.5 text-prety">Time</td>
-                                <td class="table-cell w-3/12 p-0.5 text-prety">Note</td>
+                                <td class="table-cell w-2/12 p-0.5 text-prety">Note</td>
                                 <td class="table-cell w-1/12 py-0.5 text-prety">Add to Block</td>
                             </tr>
                         </thead>
@@ -95,7 +95,7 @@
 
     async function createwsconnection(){
         try {
-            await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-traffic`)
+            // await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-traffic`)
             
             this.ws = new WebSocket(`ws://${process.env.VUE_APP_HOST_API}:3000`)
 

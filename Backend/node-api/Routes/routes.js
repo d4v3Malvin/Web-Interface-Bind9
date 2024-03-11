@@ -255,7 +255,7 @@ module.exports = function (app) {
         const { block } = req.query
         const ip = req.params.ip
         let ips = ip + "/" + block + ";"
-        const output = execSync('/home/webScript/Allow_Client_delete.sh' + ips)
+        const output = execSync('/home/webScript/Allow_Client_delete.sh ' + ips)
         var decoder = new StringDecoder('utf8')
         res.json(decoder.write(output))
     })
