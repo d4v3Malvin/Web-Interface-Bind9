@@ -19,12 +19,14 @@ if ! which dnscrypt-proxy > /dev/null; then
 fi
 if [[ $app != "" ]]; then 
     echo "Dependency installation is on progress ..."
+    echo "Update and Upgrade APT Repo ..."
     apt-get update -y > /dev/null && apt-get upgrade -y > /dev/null
+    echo "Update and Upgrade APT Repo Done"
     if ! which node >/dev/null; then
         curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
-        sudo apt-get install -y nodejs > /dev/null
+        apt-get --fix-broken install -y nodejs > /dev/null
     fi
-    apt-get install $app -y > /dev/null
+    apt-get update -y > /dev/null | apt-get --fix-broken install $app -y > /dev/null
     echo "Installation done"
 fi
 if [ ! -d $web_path ]; then 
@@ -92,7 +94,9 @@ echo "Setting up Frontend Application ..."
 cd $repo_path/Frontend
 npm install -q > /dev/null 2>&1
 cp dotenv .env
+echo "Building Vue Application ..."
 npm run build > /dev/null 2>&1
+echo "Vue Application built"
 mkdir /var/www/web_interface
 cp -r $repo_path/Frontend/dist/* /var/www/web_interface
 cp $repo_path/nginx_conf/web-bind9 /etc/nginx/sites-available
