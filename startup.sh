@@ -5,9 +5,6 @@ script_path="/home/webScript"
 repo_path=$(pwd)
 app=""
 
-if ! which npm >/dev/null; then
-    app+="npm "
-fi
 if ! which named > /dev/null; then
     app+="bind9 "
 fi
@@ -22,7 +19,7 @@ if [[ $app != "" ]]; then
     echo "Update and Upgrade APT Repo ..."
     apt-get update -y > /dev/null && apt-get upgrade -y > /dev/null
     echo "Update and Upgrade APT Repo Done"
-    if ! which node >/dev/null; then
+    if ! which nodejs >/dev/null; then
         curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
         apt-get --fix-broken install -y nodejs > /dev/null
     fi
