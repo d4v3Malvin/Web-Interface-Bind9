@@ -2,13 +2,9 @@
 
 web_path="/home/back_api"
 script_path="/home/webScript"
-repo_path=$(realpath "Web-Interface-bind9")
+repo_path=$(pwd)
 app=""
 
-if ! which node >/dev/null; then
-    curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
-    sudo apt-get install -y nodejs
-fi
 if ! which npm >/dev/null; then
     app+="npm "
 fi
@@ -23,6 +19,10 @@ if ! which dnscrypt-proxy > /dev/null; then
 fi
 if [[ $app != "" ]]; then 
     echo "Dependency installation is on progress ..."
+    if ! which node >/dev/null; then
+        (curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
+        sudo apt-get install -y nodejs) > /dev/null
+    fi
     apt-get update -y > /dev/null && apt-get install $app -y > /dev/null
     echo "Installation done"
 fi
@@ -85,15 +85,16 @@ echo "Setting up Login Credential"
 echo WVdSdGFXNEsK > $web_path/login_cred
 echo Ym1sdFpHRUsK >> $web_path/login_cred
 echo "Finish Setting up Login Credential"
-$script_path/complete_Blocked_Domain_add.sh db.ads.rpz doubleclick.net 
+$script_path/Blocked_Domain_add.sh db.ads.rpz doubleclick.net 
 ## Setup Frontend
 echo "Setting up Frontend Application ..."
 cd $repo_path/Frontend
+npm install -q > /dev/null 2>&1
 cp dotenv .env
-npm run build > /dev/null
+npm run build > /dev/null 2>&1
 mkdir /var/www/web_interface
 cp -r $repo_path/Frontend/dist/* /var/www/web_interface
-cp $repo_path/nginx_conf/web_bind9 /etc/nginx/sites-available
+cp $repo_path/nginx_conf/web-bind9 /etc/nginx/sites-available
 rm -rf /etc/nginx/sites-available/default
 rm -rf /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/web-bind9 /etc/nginx/sites-enabled/
