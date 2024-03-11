@@ -2,6 +2,7 @@
 
 web_path="/home/back_api"
 script_path="/home/webScript"
+repo_path=$(realpath "Web-Interface-bind9")
 app=""
 
 if ! which node >/dev/null; then
@@ -13,6 +14,9 @@ if ! which npm >/dev/null; then
 fi
 if ! which named > /dev/null; then
     app+="bind9 "
+fi
+if ! which nginx > /dev/null; then
+    app+="nginx "
 fi
 if ! which dnscrypt-proxy > /dev/null; then
     app+="dnscrypt-proxy "
@@ -54,7 +58,6 @@ if [ -d "/var/log/bind" ]; then
     fi
 fi
 echo "Finished DNS log directory"
-# $script_path/complete_Blocked_Domain_add.sh db.ads.rpz doubleclick.net 
 # Setup dnscrypt-proxy
 echo "Setting up dnscrypt-proxy"
 sed -i -e "s/listen_addresses = .*/listen_addresses = \['127.0.0.1:5353'\]/" "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
@@ -78,5 +81,21 @@ systemctl start node_api
 systemctl enable node_api
 echo "API Server setup finished"
 # Creating username and password for website.
+echo "Setting up Login Credential"
 echo WVdSdGFXNEsK > $web_path/login_cred
 echo Ym1sdFpHRUsK >> $web_path/login_cred
+echo "Finish Setting up Login Credential"
+$script_path/complete_Blocked_Domain_add.sh db.ads.rpz doubleclick.net 
+## Setup Frontend
+echo "Setting up Frontend Application ..."
+cd $repo_path/Frontend
+cp dotenv .env
+npm run build > /dev/null
+mkdir /var/www/web_interface
+cp -r $repo_path/Frontend/dist/* /var/www/web_interface
+cp $repo_path/nginx_conf/web_bind9 /etc/nginx/sites-available
+rm -rf /etc/nginx/sites-available/default
+rm -rf /etc/nginx/sites-enabled/default
+ln -s /etc/nginx/sites-available/web-bind9 /etc/nginx/sites-enabled/
+systemctl restart nginx
+echo "Finished Setting up Frontend Application ..."
