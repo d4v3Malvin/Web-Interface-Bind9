@@ -19,11 +19,12 @@ if ! which dnscrypt-proxy > /dev/null; then
 fi
 if [[ $app != "" ]]; then 
     echo "Dependency installation is on progress ..."
+    apt-get update -y > /dev/null && apt-get upgrade -y > /dev/null
     if ! which node >/dev/null; then
-        (curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
-        sudo apt-get install -y nodejs) > /dev/null
+        curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
+        sudo apt-get install -y nodejs > /dev/null
     fi
-    apt-get update -y > /dev/null && apt-get install $app -y > /dev/null
+    apt-get install $app -y > /dev/null
     echo "Installation done"
 fi
 if [ ! -d $web_path ]; then 
