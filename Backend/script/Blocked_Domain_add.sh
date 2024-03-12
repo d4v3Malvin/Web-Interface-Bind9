@@ -8,10 +8,16 @@ function add_domain()
 {
     domain=$2
 
-    if sed -n "/$domain\\tIN\\t$record\\t0.0.0.0/p" $1 | grep -q .; then
+    address="0.0.0.0"
+
+    if [[ $record == "AAAA" ]]; then
+        address="::"
+    fi
+
+    if sed -n "/$domain\\tIN\\t$record\\t$address/p" $1 | grep -q .; then
         echo "failed"
     else
-        sh -c "echo '$domain\tIN\t$record\t0.0.0.0' >> $1"
+        sh -c "echo '$domain\tIN\t$record\t$address' >> $1"
         echo "success"
     fi
 }

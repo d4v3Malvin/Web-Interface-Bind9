@@ -30,13 +30,13 @@ else
 	touch $tempfile
 fi
 
-cat /etc/bind/db.blocked.rpz | awk '$4=="0.0.0.0" {print}' > $outputfile
+cat /etc/bind/db.blocked.rpz | awk '$4=="0.0.0.0" || $4=="::" {print}' > $outputfile
 
 sort_and_insert 'domain'
 
 : > $outputfile
 
-cat /etc/bind/db.ads.rpz | awk '$4=="0.0.0.0" {print}' >> $outputfile
+cat /etc/bind/db.ads.rpz | awk '$4=="0.0.0.0" || $4=="::" {print}' >> $outputfile
 
 sort_and_insert 'ads'
 
