@@ -5,7 +5,7 @@ outputsfile=$1
 extract () {
 	file='/var/log/bind/temp_query.log'
 	while read line; do
-		sh -c "sed -i \"/$line/d\" /var/log/bind/query.log"
+		# sh -c "sed -i \"/$line/d\" /var/log/bind/query.log"
 		date=$( echo $line | cut -d " " -f 1 )
 		day=$( echo $date | cut -d "-" -f 1 )
 		month=$( echo $date | cut -d "-" -f 2 )
@@ -87,11 +87,11 @@ fi
 cp /var/log/bind/query.log /var/log/bind/temp_query.log
 
 # clear the query.log so log not overlapping
-cat /dev/null > /var/log/bind/query.log
+trun -s 0 /var/log/bind/query.log
 
 extract
 
 rm /var/log/bind/temp_query.log
 rm /tmp/tmp_block_123
 
-rndc reload
+rndc reload > /dev/null

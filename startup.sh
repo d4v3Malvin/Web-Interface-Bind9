@@ -3,7 +3,6 @@
 web_path="/home/back_api"
 script_path="/home/webScript"
 repo_path=$(pwd)
-local_ip=$(ip a | grep inet | grep -v inet6 | grep -v 127.0.0.1 | head -n 1 | awk -F" " '{print $2}' | awk -F/ '{print $1}')
 app=""
 
 if ! which named > /dev/null; then
@@ -73,7 +72,7 @@ cp $web_path/example.env $web_path/.env
 cp Backend/config/node_api.service /lib/systemd/system/
 sed -i -e "s|LOG_PATH='.*'|LOG_PATH='$web_path/dns-log'|" "$web_path/.env"
 chmod +x $script_path/*
-cp $repo_path/Backend/config/extrac_dns_log /etc/cron.d/extract_dns_log
+cp $repo_path/Backend/config/extract_dns_log /etc/cron.d/extract_dns_log
 cd $web_path
 echo "Installing NPM Package ..."
 npm install -q > /dev/null 2>&1
@@ -94,7 +93,7 @@ echo "Setting up Frontend Application ..."
 cd $repo_path/Frontend
 npm install -q > /dev/null 2>&1
 cp dotenv .env
-sed -i -e "s/VUE_APP_HOST_API=.*/VUE_APP_HOST_API='$local_ip'/" "$repo_path/Frontend/.env"
+$script_path/Change_IP_ENV_Code.sh $repo_path
 echo "Building Vue Application ..."
 npm run build > /dev/null 2>&1
 echo "Vue Application built"

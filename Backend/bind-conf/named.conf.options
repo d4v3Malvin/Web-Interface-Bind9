@@ -1,6 +1,11 @@
 acl "allowed" {
 };
 
+acl "local-address" {
+	127.0.0.1/32;
+	::1/128;
+}
+
 options {
 	directory "/var/cache/bind";
 
@@ -16,6 +21,7 @@ options {
 	recursion yes;
 	allow-query { allowed; };
 	allow-recursion { allowed; };
+	deny-answer-addresses { local-address; };
 	forwarders {
 	    127.0.0.1 port 5353;
 	};
@@ -32,10 +38,6 @@ options {
 	
 	dump-file  "/var/log/bind/cache_dump.db";
 	statistics-file "/var/log/bind/bind.stats";
-
-	rate-limit {
-		responses-per-second 10;
-	};
 };
 
 zone "ads.rpz.zone" {

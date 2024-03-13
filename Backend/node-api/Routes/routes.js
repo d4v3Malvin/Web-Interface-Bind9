@@ -1,5 +1,7 @@
 require('dotenv').config()
 const { spawn, execSync, execFileSync } = require("child_process")
+const fs = require('fs')
+const logpath = process.env.LOG_PATH
 const StringDecoder = require('string_decoder').StringDecoder
 
 module.exports = function (app) {
@@ -36,6 +38,66 @@ module.exports = function (app) {
         const process = spawn('/home/webScript/Dns_Log_list.sh', ['/home/back_api/dns-log'])
         process.stdout.on('end', (data) => {
             res.json("log sudah diambil")
+        })
+    })
+
+    app.get('/get-dns-log', (req,res) => {
+        let data = []
+
+        const processingdata = async (chunk) => {
+            let object = chunk.split('|')
+    
+            for(const value of object){
+
+                let object = value.split(',')
+
+                let waktu = new String(object[2])
+                let times = waktu.split(':')
+                let tanggal = String(object[1]).split('-')
+                let date = new Date()
+                // since januari are count as 0
+                date.setUTCMonth(tanggal[1]-1,tanggal[0])
+                date.setUTCFullYear(tanggal[2])
+                date.setUTCHours(times[0],times[1],times[2])
+                let datetime = date.toLocaleDateString('ID', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    timeZone: 'Asia/Jakarta',
+                    hour12: false,
+                }).toString().split(',')
+
+                let time = String(datetime[1]).split('.')
+
+                let log = {
+                    type: object[0].replace('\n','').toString(),
+                    date: datetime[0].toString(),
+                    time: time[0] + ":" + time[1] + ":" + time[2],
+                    ip_source: String(object[3]),
+                    domain: String(object[4]),
+                    dns_type: String(object[5]),
+                    note: object[6] || 'none'
+                }
+                data.push(log)
+            }
+        }
+
+        const readerStream = fs.createReadStream(logpath)
+        readerStream.setEncoding('utf8')
+        readerStream.on('data', async (chunk) => {
+            try {
+                await processingdata(chunk)
+            } catch (error) {
+                console.error('Error processing chunk:', error);
+            }
+        })
+        
+        readerStream.on('end', () => {
+            data = data.filter(data => data.type.length > 0)
+            res.json(data)
         })
     })
 
