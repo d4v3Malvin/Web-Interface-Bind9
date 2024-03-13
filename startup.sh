@@ -8,21 +8,31 @@ app=""
 if ! which named > /dev/null; then
     app+="bind9 "
 fi
+if ! which gnupg > /dev/null; then
+    app+="gnupg "
+fi
+if ! which curl > /dev/null; then
+    app+="curl "
+fi
 if ! which nginx > /dev/null; then
     app+="nginx "
 fi
 if ! which dnscrypt-proxy > /dev/null; then
     app+="dnscrypt-proxy "
 fi
+if ! which mongod > /dev/null; then
+    curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
+    sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+    --dearmor > /dev/null
+    echo -n "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+    app+="mongodb-org "
+fi
+if ! which nodejs >/dev/null; then
+    curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash -
+    app+="nodejs "
+fi
 if [[ $app != "" ]]; then 
     echo "Dependency installation is on progress ..."
-    echo "Update and Upgrade APT Repo ..."
-    apt-get update -y > /dev/null && apt-get upgrade -y > /dev/null
-    echo "Update and Upgrade APT Repo Done"
-    if ! which nodejs >/dev/null; then
-        curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
-        apt-get --fix-broken install -y nodejs > /dev/null
-    fi
     apt-get update -y > /dev/null | apt-get --fix-broken install $app -y > /dev/null
     echo "Installation done"
 fi
@@ -64,6 +74,9 @@ sed -i -e "s/listen_addresses = .*/listen_addresses = \['127.0.0.1:5353'\]/" "/e
 sed -i -e "s/server_names = .*/server_names = \['cloudflare'\]/" "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
 systemctl restart dnscrypt-proxy
 echo "Dnscrypt-proxy setup finished"
+# Setup mongodb
+systemctl start mongod
+systemctl enable mongod
 # Setup Node_API
 echo "Setting up API Server ..."
 cp -r Backend/node-api/* $web_path
