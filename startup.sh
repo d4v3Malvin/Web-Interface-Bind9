@@ -74,9 +74,6 @@ sed -i -e "s/listen_addresses = .*/listen_addresses = \['127.0.0.1:5353'\]/" "/e
 sed -i -e "s/server_names = .*/server_names = \['cloudflare'\]/" "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"
 systemctl restart dnscrypt-proxy
 echo "Dnscrypt-proxy setup finished"
-# Setup mongodb
-systemctl start mongod
-systemctl enable mongod
 # Setup Node_API
 echo "Setting up API Server ..."
 cp -r Backend/node-api/* $web_path
@@ -94,6 +91,10 @@ systemctl daemon-reload
 systemctl start node_api
 systemctl enable node_api
 echo "API Server setup finished"
+# Setup mongodb
+systemctl start mongod
+systemctl enable mongod
+mongosh --file $web_path/js/initiate.js
 # Creating username and password for website.
 echo "Setting up Login Credential"
 echo WVdSdGFXNEsK > $web_path/login_cred
