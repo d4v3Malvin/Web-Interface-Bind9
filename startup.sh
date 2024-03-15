@@ -54,7 +54,7 @@ if [ ! -f "$script_path/dns-log" ]; then
 fi
 # Setup BIND
 systemctl enable named > /dev/null 2>&1
-cp Backend/bind-conf/named.conf.options /etc/bind/
+cp Config/Bind/named.conf.options /etc/bind/
 sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/** rw,' "/etc/apparmor.d/usr.sbin.named"
 sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/ rw,' "/etc/apparmor.d/usr.sbin.named"
 cp /etc/bind/db.empty /etc/bind/db.ads.rpz 
@@ -83,10 +83,10 @@ echo "Setting up API Server ..."
 cp -r Backend/node-api/* $web_path
 cp -r Backend/script/* $script_path
 cp $web_path/example.env $web_path/.env
-cp Backend/config/node_api.service /lib/systemd/system/
+cp Config/Systemd/node_api.service /lib/systemd/system/
 sed -i -e "s|LOG_PATH='.*'|LOG_PATH='$web_path/dns-log'|" "$web_path/.env"
 chmod +x $script_path/*
-cp $repo_path/Backend/config/extract_dns_log /etc/cron.d/extract_dns_log
+cp $repo_path/Config/Cron/extract_dns_log /etc/cron.d/extract_dns_log
 cd $web_path
 echo "Installing NPM Package ..."
 npm install -q > /dev/null 2>&1
@@ -117,7 +117,7 @@ npm run build > /dev/null 2>&1
 echo "Vue Application built"
 mkdir /var/www/web_interface
 cp -r $repo_path/Frontend/dist/* /var/www/web_interface
-cp $repo_path/nginx_conf/web-bind9 /etc/nginx/sites-available
+cp $repo_path/Config/Nginx/web-bind9 /etc/nginx/sites-available
 rm -rf /etc/nginx/sites-available/default
 rm -rf /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/web-bind9 /etc/nginx/sites-enabled/

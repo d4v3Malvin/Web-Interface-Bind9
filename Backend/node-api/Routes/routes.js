@@ -2,7 +2,8 @@ require('dotenv').config()
 const { spawn, execSync, execFileSync } = require("child_process")
 const { MongoClient } = require("mongodb")
 const fs = require('fs')
-const { changeDateToIndo } = require('../script/change_date')
+const { changeDateToIndo } = require('../Modules/change_date')
+const { getAllLog } = require('../Modules/get_all')
 const logpath = process.env.LOG_PATH
 const mongo_uri = 'mongodb://localhost:27017'
 const StringDecoder = require('string_decoder').StringDecoder
@@ -47,17 +48,10 @@ module.exports = function (app) {
     })
 
     app.get('/get-dns-log', async (req,res) => {
-        const process = async () => {
-            const db = client.db("web-interface-bind9")
-            const log = db.collection("dns-log")
-            const cursor = await log.find({})
-            return cursor.toArray()
-        }
-
         try {
             client.connect()
 
-            let data = await process()
+            let data = await getAllLog(client)
             
             res.json(data)
         } catch (error) {
@@ -141,7 +135,6 @@ module.exports = function (app) {
                     code = 200
                     message = `Extraction Success, ${result.insertedCount} Lines inserted`
 
-
                 } catch (error) {
                     code = 500
                     message = "Extraction Fail, the error message is " + error
@@ -198,6 +191,30 @@ module.exports = function (app) {
         }
         else{
             res.json([])
+        }
+    })
+
+    app.get('/get-top-query-beta', async (req,res) => {
+        try {
+            client.connect()
+
+            let now_epoch = new Date().getTime()
+
+            let data = await getAllLog(client)
+
+            data.filter((row) => {
+                let date_array = row.date.split('/')
+                let time_array = row.time.split(':')
+                let dateEpoch = new Date(date_array[2],date_array[1],date_array[0],time_array[0],time_array[1],time_array[2]).getTime()
+
+                console.log(dateEpoch)
+            })
+            
+            res.json(data)
+        } catch (error) {
+            console.error(error)
+        } finally {
+            client.close()
         }
     })
 

@@ -4,6 +4,12 @@ Bind9 RPZ monitor made with
 - express.js
 - node.js
 - bind9
+- dnscrpyt-proxy
+- MongoDB
+
+## OS supported
+
+- Ubuntu 20.04 or Below
 
 ## How to Install
 

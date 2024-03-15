@@ -93,23 +93,6 @@
     let max = 10
     let start = 1
 
-    // async function createwsconnection(){
-    //     try {
-    //         // await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-traffic`)
-            
-    //         this.ws = new WebSocket(`ws://${process.env.VUE_APP_HOST_API}:3000`)
-
-    //         this.ws.onmessage = (event) => {
-    //             if (event.data.length > 0){
-    //                 this.tableData = JSON.parse(event.data).reverse()
-    //             }
-    //             this.loading = false
-    //         }
-    //     } catch (error) {
-    //         console.error("There was an error fetching the data", error);
-    //     }
-    // }
-
     export default  {
         components: {
             Multiselect,
@@ -195,8 +178,8 @@
             async importdata(){
                 let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-log`)
                 this.tableData = response.data
+                this.tableData.reverse()
                 this.loading = false
-                console.log(this.tableData)
             },
             async fetchData() {
                 try {
@@ -204,10 +187,6 @@
                     this.importdata()
                     setInterval(() => {
                         this.loading = true
-                        // this.ws.close();
-                        // this.ws.onclose = () => {
-                        //     createwsconnection.call(this)
-                        // }
                         this.importdata()
                     }, 60000);
                      
@@ -320,11 +299,8 @@
                 try {
                     // Replace with your API endpoint
                     this.isrefresh = true
-                    this.ws.close();
-                    this.ws.onclose = () => {
-                        this.importdata()
-                        this.isrefresh = false
-                    }
+                    this.importdata()
+                    this.isrefresh = false
                 } catch (error) {
                     this.error = "Error fetching data";
                     alert(error)

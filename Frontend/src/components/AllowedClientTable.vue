@@ -129,7 +129,6 @@
                 }
                 else{
                     const filtered = this.ListBlockedIP.filter((data) => {
-                        console.log(data)
                         return (
                             data.toLowerCase().includes(this.searchQuery.toLowerCase())
                         );

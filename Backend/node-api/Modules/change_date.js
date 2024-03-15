@@ -37,10 +37,6 @@ function changeDatetimeUtc7(date,time){
 
     let time_array = datetime_array[1].trim().split('.')
 
-
-
-
-
     return datetime_array[0] + "T" + time_array[0] + ":" + time_array[1] + ":" + time_array[2]
 }
 
