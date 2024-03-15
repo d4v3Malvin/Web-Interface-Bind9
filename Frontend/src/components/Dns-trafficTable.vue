@@ -93,22 +93,22 @@
     let max = 10
     let start = 1
 
-    async function createwsconnection(){
-        try {
-            // await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-traffic`)
+    // async function createwsconnection(){
+    //     try {
+    //         // await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-traffic`)
             
-            this.ws = new WebSocket(`ws://${process.env.VUE_APP_HOST_API}:3000`)
+    //         this.ws = new WebSocket(`ws://${process.env.VUE_APP_HOST_API}:3000`)
 
-            this.ws.onmessage = (event) => {
-                if (event.data.length > 0){
-                    this.tableData = JSON.parse(event.data).reverse()
-                }
-                this.loading = false
-            }
-        } catch (error) {
-            console.error("There was an error fetching the data", error);
-        }
-    }
+    //         this.ws.onmessage = (event) => {
+    //             if (event.data.length > 0){
+    //                 this.tableData = JSON.parse(event.data).reverse()
+    //             }
+    //             this.loading = false
+    //         }
+    //     } catch (error) {
+    //         console.error("There was an error fetching the data", error);
+    //     }
+    // }
 
     export default  {
         components: {
@@ -192,17 +192,23 @@
             }
         },
         methods: {
+            async importdata(){
+                let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-log`)
+                this.tableData = response.data
+                this.loading = false
+                console.log(this.tableData)
+            },
             async fetchData() {
                 try {
                     this.loading = true
-                    createwsconnection.call(this)
-                    
+                    this.importdata()
                     setInterval(() => {
                         this.loading = true
-                        this.ws.close();
-                        this.ws.onclose = () => {
-                            createwsconnection.call(this)
-                        }
+                        // this.ws.close();
+                        // this.ws.onclose = () => {
+                        //     createwsconnection.call(this)
+                        // }
+                        this.importdata()
                     }, 60000);
                      
                 } catch (error) {
@@ -316,7 +322,7 @@
                     this.isrefresh = true
                     this.ws.close();
                     this.ws.onclose = () => {
-                        createwsconnection.call(this)
+                        this.importdata()
                         this.isrefresh = false
                     }
                 } catch (error) {

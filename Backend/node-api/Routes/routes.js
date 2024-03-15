@@ -1,8 +1,13 @@
 require('dotenv').config()
 const { spawn, execSync, execFileSync } = require("child_process")
+const { MongoClient } = require("mongodb")
 const fs = require('fs')
+const { changeDateToIndo } = require('../script/change_date')
 const logpath = process.env.LOG_PATH
+const mongo_uri = 'mongodb://localhost:27017'
 const StringDecoder = require('string_decoder').StringDecoder
+
+const client = new MongoClient(mongo_uri);
 
 module.exports = function (app) {
     app.get('/', (req,res) => {
@@ -41,64 +46,121 @@ module.exports = function (app) {
         })
     })
 
-    app.get('/get-dns-log', (req,res) => {
-        let data = []
-
-        const processingdata = async (chunk) => {
-            let object = chunk.split('|')
-    
-            for(const value of object){
-
-                let object = value.split(',')
-
-                let waktu = new String(object[2])
-                let times = waktu.split(':')
-                let tanggal = String(object[1]).split('-')
-                let date = new Date()
-                // since januari are count as 0
-                date.setUTCMonth(tanggal[1]-1,tanggal[0])
-                date.setUTCFullYear(tanggal[2])
-                date.setUTCHours(times[0],times[1],times[2])
-                let datetime = date.toLocaleDateString('ID', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    timeZone: 'Asia/Jakarta',
-                    hour12: false,
-                }).toString().split(',')
-
-                let time = String(datetime[1]).split('.')
-
-                let log = {
-                    type: object[0].replace('\n','').toString(),
-                    date: datetime[0].toString(),
-                    time: time[0] + ":" + time[1] + ":" + time[2],
-                    ip_source: String(object[3]),
-                    domain: String(object[4]),
-                    dns_type: String(object[5]),
-                    note: object[6] || 'none'
-                }
-                data.push(log)
-            }
+    app.get('/get-dns-log', async (req,res) => {
+        const process = async () => {
+            const db = client.db("web-interface-bind9")
+            const log = db.collection("dns-log")
+            const cursor = await log.find({})
+            return cursor.toArray()
         }
 
-        const readerStream = fs.createReadStream(logpath)
+        try {
+            client.connect()
+
+            let data = await process()
+            
+            res.json(data)
+        } catch (error) {
+            console.error(error)
+        } finally {
+            client.close()
+        }
+    })
+
+    app.get('/extract-log', (req,res) => {
+
+        let dump = []
+        let code = 0
+        let message = ""
+
+        execSync('sudo cp /var/log/bind/query.log /var/log/bind/temp_query.log')
+        execSync('sudo truncate -s 0 /var/log/bind/query.log')
+
+        const readerStream = fs.createReadStream('/var/log/bind/temp_query.log')
         readerStream.setEncoding('utf8')
-        readerStream.on('data', async (chunk) => {
-            try {
-                await processingdata(chunk)
-            } catch (error) {
-                console.error('Error processing chunk:', error);
+
+        readerStream.on('data', (chunk) => {
+            let datas = chunk.split('\n')
+        
+            datas = datas.filter(data => data.length > 0)
+        
+            for (const data of datas){
+                let array_values = data.split(' ')
+                let type = array_values[2].toString().replace(':','')
+                let date = array_values[0].toString()
+                let time = array_values[1].split('.')[0].toString()
+
+                let datetimes = changeDateToIndo(date,time)
+                let dates = datetimes.split('T')
+
+                let client_ip = array_values[6].split('#')[0].toString()
+                let query = ""
+                let record = ""
+                let message = ""
+                if (type == "queries"){
+                    query = array_values[9].toString()
+                    record = array_values[11].toString()
+                    message = "Query are healthy"
+                }
+                else if (type == "query-errors"){
+                    let temp = array_values[12].toString().split('/')
+                    query = temp[0].toString()
+                    record = temp[2].toString()
+                    message = data.split(':')[5].split('for')[0]
+                }
+                else if (type == "rpz"){
+                    let temp = array_values[12].split('/')
+                    query = temp[0].toString()
+                    record = temp[1].toString()
+                    message = data.split(":")[5].toString()
+                }
+        
+                let log = {
+                    type: type,
+                    date: dates[0],
+                    time: dates[1],
+                    ip_source: client_ip,
+                    domain: query,
+                    dns_type: record,
+                    note: message
+                }
+                dump.push(log)
             }
         })
-        
-        readerStream.on('end', () => {
-            data = data.filter(data => data.type.length > 0)
-            res.json(data)
+
+        readerStream.on('end', async () => {
+            if (dump.length > 0){
+                try {
+                    client.connect()
+                    
+                    const db = client.db("web-interface-bind9")
+                    const log_collection = db.collection("dns-log")
+
+                    const result = await log_collection.insertMany(dump, { ordered: true })
+
+                    code = 200
+                    message = `Extraction Success, ${result.insertedCount} Lines inserted`
+
+
+                } catch (error) {
+                    code = 500
+                    message = "Extraction Fail, the error message is " + error
+                }
+                finally {
+                    client.close()
+                }
+            }
+            else{
+                code = 201
+                message = `No Data on Log`
+            }
+
+            res.json({
+                code: code,
+                message: message
+            })
         })
+        
     })
 
     app.get('/get-top-query/:type/:time', (req,res) => {

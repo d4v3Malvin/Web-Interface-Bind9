@@ -1,2 +1,2 @@
-*/2 * * * * root /home/webScript/Dns_Log_list.sh /home/back_api/dns-log
+*/2 * * * * root /home/webScript/Dns_Log_Extract.sh
 #

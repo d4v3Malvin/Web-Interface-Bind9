@@ -14,6 +14,9 @@ fi
 if ! which curl > /dev/null; then
     app+="curl "
 fi
+if ! which jq > /dev/null; then
+    app+="jq "
+fi
 if ! which nginx > /dev/null; then
     app+="nginx "
 fi
@@ -58,6 +61,7 @@ cp /etc/bind/db.empty /etc/bind/db.ads.rpz
 cp /etc/bind/db.empty /etc/bind/db.blocked.rpz
 systemctl restart apparmor
 systemctl restart named
+rndc stats
 echo "Creating DNS log directory ..."
 if [ ! -d "/var/log/bind" ]; then 
     mkdir -p "/var/log/bind"
