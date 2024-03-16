@@ -51,7 +51,7 @@ module.exports = function (app) {
         try {
             client.connect()
 
-            let data = await getAllLog(client)
+            let data = await getAllLog(client,"")
             
             res.json(data)
         } catch (error) {
@@ -67,150 +67,172 @@ module.exports = function (app) {
         let code = 0
         let message = ""
 
-        execSync('sudo cp /var/log/bind/query.log /var/log/bind/temp_query.log')
-        execSync('sudo truncate -s 0 /var/log/bind/query.log')
+        let log_count = execSync('sudo wc -l /var/log/bind/query.log')
 
-        const readerStream = fs.createReadStream('/var/log/bind/temp_query.log')
-        readerStream.setEncoding('utf8')
+        log_count = log_count.toString().split(' ')
 
-        readerStream.on('data', (chunk) => {
-            let datas = chunk.split('\n')
-        
-            datas = datas.filter(data => data.length > 0)
-        
-            for (const data of datas){
-                let array_values = data.split(' ')
-                let type = array_values[2].toString().replace(':','')
-                let date = array_values[0].toString()
-                let time = array_values[1].split('.')[0].toString()
+        if (log_count != "0"){
+            execSync('sudo cp /var/log/bind/query.log /var/log/bind/temp_query.log')
+            execSync('sudo truncate -s 0 /var/log/bind/query.log')
 
-                let datetimes = changeDateToIndo(date,time)
-                let dates = datetimes.split('T')
+            const readerStream = fs.createReadStream('/var/log/bind/temp_query.log')
+            readerStream.setEncoding('utf8')
 
-                let client_ip = array_values[6].split('#')[0].toString()
-                let query = ""
-                let record = ""
-                let message = ""
-                if (type == "queries"){
-                    query = array_values[9].toString()
-                    record = array_values[11].toString()
-                    message = "Query are healthy"
+            readerStream.on('data', (chunk) => {
+                let datas = chunk.split('\n')
+            
+                datas = datas.filter(data => data.length > 0)
+            
+                for (const data of datas){
+                    let array_values = data.split(' ')
+                    let type = array_values[2].toString().replace(':','')
+                    let date = array_values[0].toString()
+                    let time = array_values[1].split('.')[0].toString()
+
+                    let datetimes = changeDateToIndo(date,time)
+                    let dates = datetimes.split('T')
+
+                    let client_ip = array_values[6].split('#')[0].toString()
+                    let query = ""
+                    let record = ""
+                    let message = ""
+                    if (type == "queries"){
+                        query = array_values[9].toString()
+                        record = array_values[11].toString()
+                        message = "Query are healthy"
+                    }
+                    else if (type == "query-errors"){
+                        let temp = array_values[12].toString().split('/')
+                        query = temp[0].toString()
+                        record = temp[2].toString()
+                        message = data.split(':')[5].split('for')[0]
+                    }
+                    else if (type == "rpz"){
+                        let temp = array_values[12].split('/')
+                        query = temp[0].toString()
+                        record = temp[1].toString()
+                        message = data.split(":")[5].toString()
+                    }
+            
+                    let log = {
+                        type: type,
+                        date: dates[0],
+                        time: dates[1],
+                        ip_source: client_ip,
+                        domain: query,
+                        dns_type: record,
+                        note: message
+                    }
+                    dump.push(log)
                 }
-                else if (type == "query-errors"){
-                    let temp = array_values[12].toString().split('/')
-                    query = temp[0].toString()
-                    record = temp[2].toString()
-                    message = data.split(':')[5].split('for')[0]
-                }
-                else if (type == "rpz"){
-                    let temp = array_values[12].split('/')
-                    query = temp[0].toString()
-                    record = temp[1].toString()
-                    message = data.split(":")[5].toString()
-                }
-        
-                let log = {
-                    type: type,
-                    date: dates[0],
-                    time: dates[1],
-                    ip_source: client_ip,
-                    domain: query,
-                    dns_type: record,
-                    note: message
-                }
-                dump.push(log)
-            }
-        })
-
-        readerStream.on('end', async () => {
-            if (dump.length > 0){
-                try {
-                    client.connect()
-                    
-                    const db = client.db("web-interface-bind9")
-                    const log_collection = db.collection("dns-log")
-
-                    const result = await log_collection.insertMany(dump, { ordered: true })
-
-                    code = 200
-                    message = `Extraction Success, ${result.insertedCount} Lines inserted`
-
-                } catch (error) {
-                    code = 500
-                    message = "Extraction Fail, the error message is " + error
-                }
-                finally {
-                    client.close()
-                }
-            }
-            else{
-                code = 201
-                message = `No Data on Log`
-            }
-
-            res.json({
-                code: code,
-                message: message
             })
-        })
-        
-    })
 
-    app.get('/get-top-query/:type/:time', (req,res) => {
-        const top_type = req.params.type
-        const time = req.params.time
+            readerStream.on('end', async () => {
+                if (dump.length > 0){
+                    try {
+                        client.connect()
+                        
+                        const db = client.db("web-interface-bind9")
+                        const log_collection = db.collection("dns-log")
 
-        var decoder = new StringDecoder('utf8')
+                        const result = await log_collection.insertMany(dump, { ordered: true })
 
-        const result = execFileSync('/home/webScript/Top_Query_list.sh', [process.env.LOG_PATH,top_type,time])
+                        code = 200
+                        message = `Extraction Success, ${result.insertedCount} Lines inserted`
 
-        let datalist = decoder.write(result).trim()
-
-        if (datalist.length > 0){
-            const cleaned = datalist.split("\n")
-
-            let querys = []
-
-            for (const value of cleaned){
-                let query = value.trim().split(' ')
-                let querysatuan = {
-                    count: query[0],
-                    domain: query[1] || ""
+                    } catch (error) {
+                        code = 500
+                        message = "Extraction Fail, the error message is " + error
+                    }
+                    finally {
+                        client.close()
+                    }
                 }
-                querys.push(querysatuan)
-            }
-            querys = querys.sort((a,b) => b.count - a.count)
+                else{
+                    code = 201
+                    message = `No Data on Log`
+                }
 
-            let top10 = []
-
-            for (let i = 0; i < querys.length && i < 10; i++) {
-                top10.push(querys[i])
-            }
-
-            res.json(top10)
+                res.json({
+                    code: code,
+                    message: message
+                })
+            })
         }
         else{
-            res.json([])
+            res.json({
+                code: 200,
+                message: "no Data to be extracted"
+            })
         }
+        
     })
 
-    app.get('/get-top-query-beta', async (req,res) => {
+    app.get('/get-top-query/:type/:time', async (req,res) => {
+
+        const time = req.params.time
+        const type = req.params.type
+
         try {
             client.connect()
 
-            let now_epoch = new Date().getTime()
+            let now_epoch = Date.now()
 
-            let data = await getAllLog(client)
+            const hour = 1000 * 360
+            const day = hour * 24
+            const month = day * 30
+            const year = day * 365
 
-            data.filter((row) => {
+            if (time == "60m"){
+                now_epoch -= hour
+            }
+            else if (time == "1d"){
+                now_epoch -= day
+            }
+            else if (time == "1m"){
+                now_epoch -= month
+            }
+            else if (time == "1y"){
+                now_epoch -= year
+            }
+
+            let data = await getAllLog(client,type)
+
+            if (type == "all"){
+                data = await getAllLog(client,"")
+            }
+
+            let filtered = data.filter((row) => {
                 let date_array = row.date.split('/')
                 let time_array = row.time.split(':')
-                let dateEpoch = new Date(date_array[2],date_array[1],date_array[0],time_array[0],time_array[1],time_array[2]).getTime()
+                let dateEpoch = new Date(date_array[2],date_array[1]-1,date_array[0],time_array[0],time_array[1],time_array[2]).getTime()
 
-                console.log(dateEpoch)
+                if (dateEpoch >= now_epoch){
+                    return row
+                }
+            })
+
+            let unique = [] 
+
+            filtered.forEach(data => {         
+                if (!unique.includes(data.domain)){
+                    unique.push((data.domain))
+                }      
+            });
+
+            let count_collection = []
+
+            unique.forEach(data => {
+                let count = filtered.filter(row => row.domain == data).length
+                let count_item = {
+                    domain: data,
+                    count: count
+                }
+                count_collection.push(count_item)
             })
             
-            res.json(data)
+            res.json(count_collection.sort((a,b) => b.count - a.count).slice(0,10))
+            
         } catch (error) {
             console.error(error)
         } finally {

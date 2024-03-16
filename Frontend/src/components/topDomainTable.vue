@@ -191,11 +191,11 @@
             async getTopDomain(){
                 let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/all/${this.time}`)
                 this.all_domain = response.data
-                response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/success/${this.time}`)
+                response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/queries/${this.time}`)
                 this.success_domain = response.data
-                response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/blocked/${this.time}`)
+                response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/rpz/${this.time}`)
                 this.blocked_domain = response.data
-                response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/failed/${this.time}`)
+                response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-top-query/query-errors/${this.time}`)
                 this.failed_domain = response.data
             },
             async generate_chart(id,datalist){
