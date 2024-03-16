@@ -3,7 +3,7 @@ const { spawn, execSync, execFileSync } = require("child_process")
 const { MongoClient } = require("mongodb")
 const fs = require('fs')
 const { changeDateToIndo } = require('../Modules/change_date')
-const { getAllLog } = require('../Modules/get_all')
+const { getAllLog, getEpochLog } = require('../Modules/get_all')
 const logpath = process.env.LOG_PATH
 const mongo_uri = 'mongodb://localhost:27017'
 const StringDecoder = require('string_decoder').StringDecoder
@@ -176,41 +176,7 @@ module.exports = function (app) {
         try {
             client.connect()
 
-            let now_epoch = Date.now()
-
-            const hour = 1000 * 360
-            const day = hour * 24
-            const month = day * 30
-            const year = day * 365
-
-            if (time == "60m"){
-                now_epoch -= hour
-            }
-            else if (time == "1d"){
-                now_epoch -= day
-            }
-            else if (time == "1m"){
-                now_epoch -= month
-            }
-            else if (time == "1y"){
-                now_epoch -= year
-            }
-
-            let data = await getAllLog(client,type)
-
-            if (type == "all"){
-                data = await getAllLog(client,"")
-            }
-
-            let filtered = data.filter((row) => {
-                let date_array = row.date.split('/')
-                let time_array = row.time.split(':')
-                let dateEpoch = new Date(date_array[2],date_array[1]-1,date_array[0],time_array[0],time_array[1],time_array[2]).getTime()
-
-                if (dateEpoch >= now_epoch){
-                    return row
-                }
-            })
+            let filtered = await getEpochLog(client,type,time)
 
             let unique = [] 
 
