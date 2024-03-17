@@ -247,10 +247,14 @@
             async initialize(){
                 await this.getTopDomain()
 
-                all_domain_graph = await this.generate_chart("all_domain_stats",this.all_domain)
-                success_domain_graph = await this.generate_chart("success_domain_stats",this.success_domain)
-                blocked_domain_graph = await this.generate_chart("blocked_domain_stats",this.blocked_domain)
-                failed_domain_graph = await this.generate_chart("failed_domain_stats",this.failed_domain)
+                try {
+                    all_domain_graph = await this.generate_chart("all_domain_stats",this.all_domain)
+                    success_domain_graph = await this.generate_chart("success_domain_stats",this.success_domain)
+                    blocked_domain_graph = await this.generate_chart("blocked_domain_stats",this.blocked_domain)
+                    failed_domain_graph = await this.generate_chart("failed_domain_stats",this.failed_domain)
+                } catch (error) {
+                    console.error("Error when creating Chart, Please refresh the page, Error Message : " + error)
+                }
             },
             async updateChart() {
                 await this.getTopDomain()

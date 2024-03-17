@@ -47,7 +47,7 @@
                 .then(response => {
                     if (response.data.code == 200){
                         document.cookie = `user=${JSON.stringify(userData)};max-age=3600`
-                        window.location.href = '/';
+                        window.location.href = '/'
                     }
                     alert(response.data.message)
                     this.username = ""

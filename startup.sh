@@ -123,5 +123,3 @@ rm -rf /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/web-bind9 /etc/nginx/sites-enabled/
 systemctl restart nginx
 echo "Finished Setting up Frontend Application ..."
-
-# ip a | grep inet | grep -v inet6 | grep -v 127.0.0.1 | head -n 1 | awk -F" " '{print $2}' | awk -F/ '{print $1}'

@@ -226,14 +226,7 @@
                 if (this.searchQuery.toString().trim().length == 0){
                     const filtered = this.tableData.filter((data) => {
                         if (data.type == this.selectedcat){
-                            return (
-                                data.type ||
-                                data.domain || 
-                                data.ip_source ||
-                                data.dns_type || 
-                                data.date ||
-                                data.time
-                            )
+                            return data
                         }
                     })
                     pagedata = filtered
@@ -264,14 +257,7 @@
                         let date_array = data.date.split('/')
                         let data_epoch = new Date(date_array[2],date_array[1],date_array[0]).getTime()
                         if (data_epoch >= date_min_epoch && data_epoch <= date_max_epoch){
-                            return (
-                                data.type ||
-                                data.domain || 
-                                data.ip_source ||
-                                data.dns_type || 
-                                data.date ||
-                                data.time
-                            )
+                            return data
                         }
                     })
                 }

@@ -51,7 +51,7 @@ module.exports = function (app) {
         try {
             client.connect()
 
-            let data = await getAllLog(client,"")
+            let data = await getAllLog(client,"all")
             
             res.json(data)
         } catch (error) {
@@ -206,41 +206,39 @@ module.exports = function (app) {
         }
     })
 
-    app.get('/get-top-client/:time', (req,res) => {
+    app.get('/get-top-client/:time', async (req,res) => {
         const time = req.params.time
 
-        var decoder = new StringDecoder('utf8')
+        try {
+            client.connect()
 
-        const result = execFileSync('/home/webScript/Top_Client_list.sh', [process.env.LOG_PATH,time])
-        
-        let datalist = decoder.write(result).trim()
+            let filtered = await getEpochLog(client,"all",time)
 
-        if (datalist.length > 0){
-            const cleaned = datalist.split("\n")
+            let unique = [] 
 
-            let querys = []
+            filtered.forEach(data => {         
+                if (!unique.includes(data.ip_source)){
+                    unique.push(data.ip_source)
+                }      
+            });
 
-            for (const value of cleaned){
-                let query = value.trim().split(' ')
-                let querysatuan = {
-                    count: query[0],
-                    ip: query[1] || ""
+            let count_collection = []
+
+            unique.forEach(data => {
+                let count = filtered.filter(row => row.ip_source == data).length
+                let count_item = {
+                    ip: data,
+                    count: count
                 }
-                querys.push(querysatuan)
-            }
-
-            querys = querys.sort((a,b) => b.count - a.count)
-
-            let top10 = []
-
-            for (let i = 0; i < querys.length && i < 10; i++) {
-                top10.push(querys[i])
-            }
-
-            res.json(top10)
-        }
-        else{
-            res.json([])
+                count_collection.push(count_item)
+            })
+            
+            res.json(count_collection.sort((a,b) => b.count - a.count).slice(0,10))
+            
+        } catch (error) {
+            console.error(error)
+        } finally {
+            client.close()
         }
     })
 

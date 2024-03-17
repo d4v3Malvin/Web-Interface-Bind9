@@ -20,9 +20,6 @@
         <div class="w-full sidebar-menu">
           <router-link to="/dns-cache" :active-class="'bg-gray-100 text-black'" class="link">DNS Cache</router-link>
         </div>
-        <div class="w-full sidebar-menu">
-          <router-link to="/setting" :active-class="'bg-gray-100 text-black'" class="link">DNS Setting</router-link>
-        </div>
       </div>
       <div class="col-span-5">
         <router-view class="pt-5"/>
@@ -41,12 +38,12 @@
         isLogin: false,
       }
     },
-    mounted() {
+    beforeMount(){
       const usercookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('user='))
       if (usercookie){
         this.isLogin = true
       }
-    }
+    },
   }
 </script>
 

@@ -4,7 +4,7 @@
             <h1 class="text-center text-xl">Web Interface BIND9</h1>
             <h1 class="text-center text-xl mt-5 mb-3">Basic Stats</h1>
         </div>
-        <div class="w-full my-2 flex flex-row justify-left">
+        <div class="w-full mt-2 mb-5 flex flex-row justify-left">
             <select v-model="time" id="type" class="w-1/5 text-center ms-10">
                 <option value="60m">60 Minutes</option>
                 <option value="1d">1 Days</option>
@@ -13,42 +13,66 @@
                 <option value="all">All time</option>
             </select>
         </div>
-        <div class="w-full h-auto grid grid-cols-2">
-            <div class="w-full col-span-2">
-                <h1 v-if="time == '60m'" class="text-center py-5 text-xl text-white">Top Client Request Last 60 Min</h1>
-                <h1 v-else-if="time == '1d'" class="text-center py-5 text-xl text-white">Top Client Request Last 1 Day</h1>
-                <h1 v-else-if="time == '1m'" class="text-center py-5 text-xl text-white">Top Client Request Last 1 Month</h1>
-                <h1 v-else-if="time == '1y'" class="text-center py-5 text-xl text-white">Top Client Request Last 1 Year</h1>
-                <h1 v-if="time == 'all'" class="text-center py-5 text-xl text-white">Top Client Request</h1>
-            </div>
-            <div class="w-3/5 h-auto" style="margin-left: calc(20%); margin-right: calc(20%);">
-                <div class="flex justify-center w-full">
-                    <table class="table w-full bg-white">
-                        <thead class="table-row-group">
-                            <tr>
-                                <th class="table-cell">Client</th>
-                                <th class="table-cell">Count</th>
-                            </tr>
-                        </thead>
-                        <tbody v-if="all_client.length > 0" style="background-color: #f3eaf4;">
-                            <tr class="table-row bg-purple-200" v-for="client in all_client" :key="client">
-                                <td class="table-cell">{{ client.ip }}</td>
-                                <td class="table-cell" >{{ client.count }}</td>
-                            </tr>
-                        </tbody>
-                        <tbody v-else style="background-color: #f3eaf4;">
-                            <tr class="table-row bg-purple-200">
-                                <td class="table-cell" colspan="2">No Client Available</td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <div class="w-full flex flex-row justify-center">
+            <div class="w-4/5 h-auto grid grid-cols-2 py-5 rounded-md opacity-75" style="background-color: #d8d8d8">
+                <div class="w-full col-span-2">
+                    <h1 v-if="time == '60m'" class="text-center pb-5 text-xl">Top Client Request Last 60 Min</h1>
+                    <h1 v-else-if="time == '1d'" class="text-center pb-5 text-xl">Top Client Request Last 1 Day</h1>
+                    <h1 v-else-if="time == '1m'" class="text-center pb-5 text-xl">Top Client Request Last 1 Month</h1>
+                    <h1 v-else-if="time == '1y'" class="text-center pb-5 text-xl">Top Client Request Last 1 Year</h1>
+                    <h1 v-if="time == 'all'" class="text-center pb-5 text-xl">Top Client Request</h1>
+                </div>
+                <div class="w-3/5 h-auto" style="margin-left: calc(20%); margin-right: calc(20%); ">
+                    <div class="flex justify-center w-full">
+                        <table class="table w-full bg-white">
+                            <thead class="table-row-group">
+                                <tr>
+                                    <th class="table-cell">Client</th>
+                                    <th class="table-cell">Count</th>
+                                </tr>
+                            </thead>
+                            <tbody v-if="all_client.length > 0" style="background-color: #f3eaf4;">
+                                <tr class="table-row bg-purple-200" v-for="client in all_client" :key="client">
+                                    <td class="table-cell">{{ client.ip }}</td>
+                                    <td class="table-cell" >{{ client.count }}</td>
+                                </tr>
+                            </tbody>
+                            <tbody v-else style="background-color: #f3eaf4;">
+                                <tr class="table-row bg-purple-200">
+                                    <td class="table-cell" colspan="2">No Client Available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="w-full h-full">
+                    <div style="width: 60%; height: 100%; position: relative;" >
+                        <canvas id="client_stats" style="width: 60%; height: 60%;"></canvas>
+                    </div>
                 </div>
             </div>
-            <div class="w-full h-full">
-                <div style="width: 60%; height: 100%; position: relative;" >
-                    <canvas id="client_stats" style="width: 60%; height: 60%;"></canvas>
+        </div>
+        <div class="w-full pt-5 mb-5">
+            <form @submit.prevent="change_password" method="post">
+                <div class="w-full flex flex-row justify-center">
+                    <div class="w-4/5 py-5 rounded-md opacity-75" style="background-color: #d8d8d8">
+                        <div class="text-xl text-center">
+                            Change the password
+                        </div>
+                        <label for="old_field">Old Password</label><br>
+                        <input type="password" v-model="old_password" id="old_field" class="w-3/5 text-center"><br>
+                        <div class="w-full py-1"></div>
+                        <label for="new_field">New Password</label><br>
+                        <input type="password" v-model="new_password" id="new_field" class="w-3/5 text-center"><br>
+                        <div class="w-full py-1"></div>
+                        <label for="confirm_field">Confirm New Password</label><br>
+                        <input type="password" v-model="confirm_password" id="confirm_field" class="w-3/5 text-center">
+                        <div class="w-full pt-5">
+                            <button class="border bg-green-400 px-2 py-1 " type="submit">Submit</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </template>
@@ -63,7 +87,10 @@
         data() {
             return {
                 time: "60m",
-                all_client: []
+                all_client: [],
+                old_password: '',
+                new_password: '',
+                confirm_password: ''
             }
         },
         watch: {
@@ -92,13 +119,13 @@
                                 label: 'List of Client iP',
                                 data: data.map(row => row.count),
                                 backgroundColor: [
-                                    'rgba(201, 203, 207, 0.2)',
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(255, 159, 64, 0.2)',
-                                    'rgba(255, 205, 86, 0.2)',
-                                    'rgba(75, 192, 192, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(201, 203, 207, 0.5)',
+                                    'rgba(255, 99, 132, 0.5)',
+                                    'rgba(255, 159, 64, 0.5)',
+                                    'rgba(255, 205, 86, 0.5)',
+                                    'rgba(75, 192, 192, 0.5)',
+                                    'rgba(54, 162, 235, 0.5)',
+                                    'rgba(153, 102, 255, 0.5)',
                                 ],
                                 borderWidth: 1
                             }]
@@ -118,7 +145,34 @@
                 client_graph.data.datasets[0].data = this.all_client.map(row => row.count)
                 client_graph.data.labels = this.all_client.map(row => row.ip)
                 client_graph.update()
-            }
+            },
+            change_password() {
+                const packages = {
+                    old_pass: this.old_password,
+                    new_pass: this.new_password,
+                    confirm_pass: this.confirm_password
+                }
+
+                if (packages.new_pass.length > 0){
+                    axios.post(`http://${process.env.VUE_APP_HOST_API}:3000/change-password`, packages)
+                    .then(response => {
+                        let result = response.data
+                        alert(result.message)
+                        this.old_password = ""
+                        this.new_password = ""
+                        this.confirm_password = ""
+                    })
+                    .catch(error => {
+                        alert(error)
+                    })
+                }
+                else{
+                    alert("Your new password cant be empty")
+                    this.old_password = ""
+                    this.new_password = ""
+                    this.confirm_password = ""
+                }
+            },
         }
     }
 </script>

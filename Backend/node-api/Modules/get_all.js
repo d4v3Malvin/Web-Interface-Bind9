@@ -2,8 +2,8 @@ async function getAllLog(client,query){
     const db = client.db("web-interface-bind9")
     const log = db.collection("dns-log")
     let cursor = null
-    if (query == ""){
-        cursor = await log.find({})
+    if (query == "all"){
+        cursor = await log.find()
     }
     else {
         cursor = await log.find({ type: query })
@@ -45,10 +45,6 @@ async function getEpochLog(client,type,time){
 
     let data = await getAllLog(client,type)
 
-    if (type == "all"){
-        data = await getAllLog(client,"")
-    }
-
     let filtered = data.filter((row) => {
         let date_array = row.date.split('/')
         let time_array = row.time.split(':')
@@ -58,6 +54,10 @@ async function getEpochLog(client,type,time){
             return row
         }
     })
+
+    if (time == "all"){
+        filtered = data
+    }
 
     return filtered
 }

@@ -10,8 +10,6 @@ import dnsstats from '../views/DnsStats.vue'
 
 import AllowedClientView from "../views/AllowedClientView.vue"
 
-import dnsSetting from "../views/SettingView.vue"
-
 import loginForm from "../views/LoginView.vue"
 
 const routes = [
@@ -57,12 +55,6 @@ const routes = [
     path: '/stats',
     name: 'DNS Statistics',
     component: dnsstats,
-    meta: { requestLogin: true }
-  },
-  {
-    path: '/setting',
-    name: 'DNS Setting',
-    component: dnsSetting,
     meta: { requestLogin: true }
   },
   {
