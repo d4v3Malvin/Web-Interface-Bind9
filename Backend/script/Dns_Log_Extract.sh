@@ -5,7 +5,7 @@ output=$(curl -X GET -s "$api")
 
 code=$(echo "$output" | jq -r ".code")
 
-while [[ $code != 200 ]]; do
+while [[ $code != 200 && $code != 201 ]]; do
     output=$(curl -X GET -s "$api")
     code=$(echo "$output" | jq -r ".code")
     sleep 2

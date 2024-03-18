@@ -104,7 +104,6 @@
                 selectedcat: "queries",
                 category: ['queries','rpz','query-errors'],
                 tableData: [],
-                ws : null,
                 currentpage: 1,
                 totalitem: 10,
                 searchQuery: '',
@@ -334,9 +333,6 @@
             }
         },
         beforeUnmount() {
-            if (this.ws){
-                this.ws.close()
-            }
         }
 
     }

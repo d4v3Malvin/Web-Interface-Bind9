@@ -1,7 +1,7 @@
 <template>
     <div class="w-full h-auto snap-y snap-mandatory">
-        <h1 class="text-2xl col-span-2">DNS Stats</h1>
-        <div class="w-full my-2 flex flex-row justify-left">
+        <h1 class="text-2xl">DNS Stats</h1>
+        <div class="w-full my-1 flex flex-row justify-left">
             <select v-model="time" id="type" class="w-1/5 text-center ms-10">
                 <option value="60m">60 Minutes</option>
                 <option value="1d">1 Days</option>
@@ -10,44 +10,21 @@
                 <option value="all">All time</option>
             </select>
         </div>
-        <div class="w-full h-auto grid grid-cols-2 snap-center">
-            <div class="w-full col-span-2">
+        <div class="w-full h-auto snap-center">
+            <div class="w-full">
                 <h1 v-if="time == '60m'" class="text-center py-5 text-xl text-white">Top All Domain Request Last 60 Min</h1>
                 <h1 v-else-if="time == '1d'" class="text-center py-5 text-xl text-white">Top All Domain Request Last 1 Day</h1>
                 <h1 v-else-if="time == '1m'" class="text-center py-5 text-xl text-white">Top All Domain Request Last 1 Month</h1>
                 <h1 v-else-if="time == '1y'" class="text-center py-5 text-xl text-white">Top All Domain Request Last 1 Year</h1>
                 <h1 v-else-if="time == 'all'" class="text-center py-5 text-xl text-white">Top All Domain Request</h1>
             </div>
-            <div class="w-3/5 h-auto" style="margin-left: calc(20%); margin-right: calc(20%);">
-                <div class="flex justify-center w-full">
-                    <table class="table w-full bg-white">
-                        <thead class="table-row-group">
-                            <tr>
-                                <th class="table-cell">Domain</th>
-                                <th class="table-cell">Request</th>
-                            </tr>
-                        </thead>
-                        <tbody v-if="all_domain.length > 0" style="background-color: #f3eaf4;">
-                            <tr class="table-row bg-purple-200" v-for="domain in all_domain" :key="domain">
-                                <td class="table-cell">{{ domain.domain }}</td>
-                                <td class="table-cell" >{{ domain.count }}</td>
-                            </tr>
-                        </tbody>
-                        <tbody v-else style="background-color: #f3eaf4;">
-                            <tr class="table-row bg-purple-200">
-                                <td class="table-cell" colspan="2">No Domain Available</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="w-full h-full">
-                <div style="width: 60%; height: 100%;" >
-                    <canvas id="all_domain_stats" style="width: 60%; height: 60%;"></canvas>
+            <div class="w-full h-full flex flex-row justify-center">
+                <div class="p-5 opacity-75 rounded-md" style="width: 45%; background-color: white;" >
+                    <canvas id="all_domain_stats"></canvas>
                 </div>
             </div>
         </div>
-        <div class="w-full h-auto grid grid-cols-2 snap-center mb-5">
+        <div class="w-full h-auto snap-center mb-5">
             <div class="w-full col-span-2">
                 <h1 v-if="time == '60m'" class="text-center py-5 text-xl text-white">Top Success Domain Request Last 60 Min</h1>
                 <h1 v-else-if="time == '1d'" class="text-center py-5 text-xl text-white">Top Success Domain Request Last 1 Day</h1>
@@ -55,36 +32,13 @@
                 <h1 v-else-if="time == '1y'" class="text-center py-5 text-xl text-white">Top Success Domain Request Last 1 Year</h1>
                 <h1 v-else-if="time == 'all'" class="text-center py-5 text-xl text-white">Top Success Domain Request</h1>
             </div>
-            <div class="w-3/5 h-auto" style="margin-left: calc(20%); margin-right: calc(20%);">
-                <div class="flex justify-center w-full">
-                    <table class="table w-full bg-white">
-                        <thead class="table-row-group">
-                            <tr>
-                                <th class="table-cell">Domain</th>
-                                <th class="table-cell">Request</th>
-                            </tr>
-                        </thead>
-                        <tbody v-if="success_domain.length > 0" style="background-color: #f3eaf4;">
-                            <tr class="table-row bg-purple-200" v-for="domain in success_domain" :key="domain">
-                                <td class="table-cell">{{ domain.domain }}</td>
-                                <td class="table-cell" >{{ domain.count }}</td>
-                            </tr>
-                        </tbody>
-                        <tbody v-else style="background-color: #f3eaf4;">
-                            <tr class="table-row bg-purple-200">
-                                <td class="table-cell" colspan="2">No Success Domain Available</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="w-full h-full">
-                <div style="width: 60%; height: 100%;" >
-                    <canvas id="success_domain_stats" style="width: 60%; height: 60%;"></canvas>
+            <div class="w-full h-full flex flex-row justify-center">
+                <div class="p-5 opacity-75 rounded-md" style="width: 45%; background-color: white;" >
+                    <canvas id="success_domain_stats"></canvas>
                 </div>
             </div>
         </div>
-        <div class="w-full h-auto grid grid-cols-2 snap-center mb-5">
+        <div class="w-full h-auto snap-center mb-5">
             <div class="w-full col-span-2">
                 <h1 v-if="time == '60m'" class="text-center py-5 text-xl text-white">Top Blocked Domain Request Last 60 Min</h1>
                 <h1 v-else-if="time == '1d'" class="text-center py-5 text-xl text-white">Top Blocked Domain Request Last 1 Day</h1>
@@ -92,69 +46,23 @@
                 <h1 v-else-if="time == '1y'" class="text-center py-5 text-xl text-white">Top Blocked Domain Request Last 1 Year</h1>
                 <h1 v-else-if="time == 'all'" class="text-center py-5 text-xl text-white">Top Blocked Domain Request</h1>
             </div>
-            <div class="w-3/5 h-auto" style="margin-left: calc(20%); margin-right: calc(20%);">
-                <div class="flex justify-center w-full">
-                    <table class="table w-full bg-white">
-                        <thead class="table-row-group">
-                            <tr>
-                                <th class="table-cell">Domain</th>
-                                <th class="table-cell">Request</th>
-                            </tr>
-                        </thead>
-                        <tbody v-if="blocked_domain.length > 0" style="background-color: #f3eaf4;">
-                            <tr class="table-row bg-purple-200" v-for="domain in blocked_domain" :key="domain">
-                                <td class="table-cell">{{ domain.domain }}</td>
-                                <td class="table-cell" >{{ domain.count }}</td>
-                            </tr>
-                        </tbody>
-                        <tbody v-else style="background-color: #f3eaf4;">
-                            <tr class="table-row bg-purple-200">
-                                <td class="table-cell" colspan="2">No Blocked Domain Available</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="w-full h-full">
-                <div style="width: 60%; height: 100%;" >
-                    <canvas id="blocked_domain_stats" style="width: 60%; height: 60%;"></canvas>
+            <div class="w-full h-full flex flex-row justify-center">
+                <div class="p-5 opacity-75 rounded-md" style="width: 45%; background-color: white;" >
+                    <canvas id="blocked_domain_stats"></canvas>
                 </div>
             </div>
         </div>
-        <div class="w-full h-auto grid grid-cols-2 snap-center mb-5">
-            <div class="w-full col-span-2">
+        <div class="w-full h-auto snap-center mb-5">
+            <div class="w-full">
                 <h1 v-if="time == '60m'" class="text-center py-5 text-xl text-white">Top Failed Domain Request Last 60 Min</h1>
                 <h1 v-else-if="time == '1d'" class="text-center py-5 text-xl text-white">Top Failed Domain Request Last 1 Day</h1>
                 <h1 v-else-if="time == '1m'" class="text-center py-5 text-xl text-white">Top Failed Domain Request Last 1 Month</h1>
                 <h1 v-else-if="time == '1y'" class="text-center py-5 text-xl text-white">Top Failed Domain Request Last 1 Year</h1>
                 <h1 v-else-if="time == 'all'" class="text-center py-5 text-xl text-white">Top Failed Domain Request</h1>
             </div>
-            <div class="w-3/5 h-auto" style="margin-left: calc(20%); margin-right: calc(20%);">
-                <div class="flex justify-center w-full">
-                    <table class="table w-full bg-white">
-                        <thead class="table-row-group">
-                            <tr>
-                                <th class="table-cell">Domain</th>
-                                <th class="table-cell">Request</th>
-                            </tr>
-                        </thead>
-                        <tbody v-if="failed_domain.length > 0" style="background-color: #f3eaf4;">
-                            <tr class="table-row bg-purple-200" v-for="domain in failed_domain" :key="domain">
-                                <td class="table-cell">{{ domain.domain }}</td>
-                                <td class="table-cell" >{{ domain.count }}</td>
-                            </tr>
-                        </tbody>
-                        <tbody v-else style="background-color: #f3eaf4;">
-                            <tr class="table-row bg-purple-200">
-                                <td class="table-cell" colspan="2">No Failed Domain Available</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="w-full h-full">
-                <div style="width: 60%; height: 100%;position: relative;" >
-                    <canvas id="failed_domain_stats" style="width: 60%; height: 60%;"></canvas>
+            <div class="w-full h-full flex flex-row justify-center">
+                <div class="p-5 opacity-75 rounded-md" style="width: 45%; background-color: white;" >
+                    <canvas id="failed_domain_stats"></canvas>
                 </div>
             </div>
         </div>
@@ -210,9 +118,9 @@
                             datasets: [{
                                 data: data.map(row => row.count),
                                 backgroundColor: [
-                                    'rgb(53, 104, 45)',
-                                    'rgb(244, 244, 244)',
-                                    'rgb(32, 96, 61)',
+                                    'rgb(89, 31, 197)',
+                                    'rgb(31, 197, 60)',
+                                    'rgb(197, 31, 194)',
                                     'rgb(115, 66, 34)',
                                     'rgb(243, 159, 24)',
                                     'rgb(74, 25, 44)',
@@ -221,23 +129,28 @@
                                     'rgb(228, 160, 16)',
                                     'rgb(28, 28, 28)',
                                 ]
-                            }]
+                            }],
                         },
                         options: {
                             responsive: true,
                             plugins: {
                                 legend: {
-                                    position: 'right',
+                                    position: 'top',
+                                    fullSize: false,
                                     labels: {
+                                        boxHeight: 8 ,
                                         font: {
                                             size: 12
                                         }
                                     }
+                                },
+                                customCanvasBackgroundColor: {
+                                    color: 'White',
                                 }
                             },
                             layout: {
                                 padding: {
-                                    bottom: 100
+                                    bottom: 0
                                 }
                             }
                         }

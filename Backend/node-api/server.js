@@ -6,7 +6,6 @@ require('dotenv').config({path:'/home/back_api/.env'})
 
 const app = express()
 const server = http.createServer(app)
-const logpath = process.env.LOG_PATH
 
 app.use(cors())
 app.use(bodyParser.json())

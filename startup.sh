@@ -53,6 +53,7 @@ if [ ! -f "$script_path/dns-log" ]; then
     touch $script_path/dns-log
 fi
 # Setup BIND
+echo "Setting up BIND9 ..."
 systemctl enable named > /dev/null 2>&1
 cp Config/Bind/named.conf.options /etc/bind/
 sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/** rw,' "/etc/apparmor.d/usr.sbin.named"
@@ -61,7 +62,6 @@ cp /etc/bind/db.empty /etc/bind/db.ads.rpz
 cp /etc/bind/db.empty /etc/bind/db.blocked.rpz
 systemctl restart apparmor
 systemctl restart named
-rndc stats
 echo "Creating DNS log directory ..."
 if [ ! -d "/var/log/bind" ]; then 
     mkdir -p "/var/log/bind"
@@ -71,7 +71,10 @@ if [ -d "/var/log/bind" ]; then
         chown -R bind:bind /var/log/bind
     fi
 fi
+rndc stats
+chown bind:bind /var/log/bind/bind.stats
 echo "Finished DNS log directory"
+echo "Bind9 Setup Finished"
 # Setup dnscrypt-proxy
 echo "Setting up dnscrypt-proxy"
 sed -i -e "s/listen_addresses = .*/listen_addresses = \['127.0.0.1:5353'\]/" "/etc/dnscrypt-proxy/dnscrypt-proxy.toml"

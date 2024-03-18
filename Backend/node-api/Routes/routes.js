@@ -4,6 +4,7 @@ const { MongoClient } = require("mongodb")
 const fs = require('fs')
 const { changeDateToIndo } = require('../Modules/change_date')
 const { getAllLog, getEpochLog } = require('../Modules/get_all')
+const e = require('express')
 const logpath = process.env.LOG_PATH
 const mongo_uri = 'mongodb://localhost:27017'
 const StringDecoder = require('string_decoder').StringDecoder
@@ -391,69 +392,106 @@ module.exports = function (app) {
         execSync('rndc flush')
         res.send("cache sudah terhapus")
     })
-    app.post('/login', (req,res) => {
+    app.post('/login', async (req,res) => {
         var { username, password } = req.body
         let code = 0
         let message = ""
-        const result = execSync('cat /home/back_api/login_cred')
-        var decoder = new StringDecoder('utf8')
-        let array = decoder.write(result).split('\n')
-        if (atob(atob(array[0])).trim() == username.trim()) {
-            if(atob(atob(array[1])).trim() == password.trim()) {
-                code = 200
-                message = "Success Login"
-            }
-            else{
-                code = 400
-                message = "Password is not correct"
-            }
-        }
-        else{
-            code = 300
-            message = "Username is not correct"
-        }
 
-        const jsonmessage = {
-            code: code,
-            message: message
-        }
+        try {
+            client.connect()
 
-        res.json(jsonmessage)
+            const db = client.db("web-interface-bind9")
+            const users = db.collection("user")
+
+            if (await users.countDocuments({ username: username }) <= 0){
+                code = 300
+                message = "Username is not correct"
+            }
+            else {
+                let cursor = await users.find({ username: username }).toArray()
+
+                let pass = btoa(btoa(password))
+
+                console.log(cursor[0].password + " " + pass)
+
+                if (cursor[0].password == pass){
+                    code = 200
+                    message = "Success Login"
+                }
+                else{
+                    code = 400
+                    message = "Password is not correct"
+                }
+            }
+
+        } 
+        catch (error) {
+            console.error(error)
+        }
+        finally {
+            const jsonmessage = {
+                code: code,
+                message: message
+            }
+            client.close()
+            res.json(jsonmessage)
+        }
     })
 
-    app.post('/change-password', (req,res) => {
+    app.post('/change-password', async (req,res) => {
         var { old_pass, new_pass, confirm_pass } = req.body
         let code = 0
         let message = ""
-        var decoder = new StringDecoder('utf8')
-        if (new_pass.toLowerCase() != "admin"){
-            let old_password = execSync('tail -n 1 /home/back_api/login_cred | base64 -d | base64 -d')
-            if (old_pass.trim() == decoder.write(old_password).trim()){
-                if (new_pass == confirm_pass){
-                    const result = execFileSync('/home/webScript/Change_password.sh', [old_pass,new_pass])
-                    code = 200
-                    message = decoder.write(result)
+
+        try {
+            client.connect()
+
+            const db = client.db("web-interface-bind9")
+            const users = db.collection("user")
+
+            let cursor = await users.find({ username: "admin" }).toArray()
+
+            if (cursor[0].password == btoa(btoa(old_pass))){
+                if (new_pass != old_pass){
+                    if (new_pass == confirm_pass){
+                        let new_enc = btoa(btoa(new_pass))
+                        let result = await users.updateOne({ username: "admin" }, { $set: { password : new_enc } })
+    
+                        if (result.modifiedCount > 0 ){
+                            code = 200
+                            message = "Password Changed Successfully."
+                        }
+                        else {
+                            code = 500
+                            message = "There is Error when updating data."
+                        }
+                    }
+                    else{
+                        code = 412
+                        message = "New Password are different than Confirm Password."
+                    }
                 }
                 else{
-                    code = 412
-                    message = "New Password are different than Confirm Password."
+                    code = 413
+                    message = "New Password cant be same as old password."
                 }
             }
-            else{
+            else {
                 code = 401
                 message = "Wrong Old Password."
             }
+        } 
+        catch (error) {
+            console.error(error)
         }
-        else{
-            code = 411
-            message = "New Password Cant be this."
+        finally {
+            client.close()
+            const jsonmessage = {
+                code: code,
+                message: message
+            }
+    
+            res.json(jsonmessage)
         }
-
-        const jsonmessage = {
-            code: code,
-            message: message
-        }
-
-        res.json(jsonmessage)
     })
 }
