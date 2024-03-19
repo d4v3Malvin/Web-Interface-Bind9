@@ -100,10 +100,12 @@ systemctl start node_api
 systemctl enable node_api
 echo "API Server setup finished"
 # Setup mongodb
+echo "Setting up Mongodb ..."
 systemctl start mongod
 systemctl enable mongod
-systemctl restart mongod
+sleep 10
 mongosh --file $web_path/js/initiate.js
+echo "Mongodb Setup Done"
 # Creating username and password for website.
 echo "Setting up Login Credential"
 echo WVdSdGFXNEsK > $web_path/login_cred
