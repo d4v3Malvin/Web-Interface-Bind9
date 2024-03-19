@@ -102,6 +102,7 @@ echo "API Server setup finished"
 # Setup mongodb
 systemctl start mongod
 systemctl enable mongod
+systemctl restart mongod
 mongosh --file $web_path/js/initiate.js
 # Creating username and password for website.
 echo "Setting up Login Credential"
