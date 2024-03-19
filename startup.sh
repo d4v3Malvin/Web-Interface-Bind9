@@ -54,25 +54,26 @@ if [ ! -f "$script_path/dns-log" ]; then
 fi
 # Setup BIND
 echo "Setting up BIND9 ..."
+systemctl start named > /dev/null 2>&1
 systemctl enable named > /dev/null 2>&1
 cp Config/Bind/named.conf.options /etc/bind/
 sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/** rw,' "/etc/apparmor.d/usr.sbin.named"
 sed -i '/\/var\/cache\/bind\/ rw,/a \ \ \/var/log/bind/ rw,' "/etc/apparmor.d/usr.sbin.named"
 cp /etc/bind/db.empty /etc/bind/db.ads.rpz 
 cp /etc/bind/db.empty /etc/bind/db.blocked.rpz
-systemctl restart apparmor
-systemctl restart named
+systemctl restart apparmor > /dev/null 2>&1
 echo "Creating DNS log directory ..."
 if [ ! -d "/var/log/bind" ]; then 
     mkdir -p "/var/log/bind"
 fi
+rndc reload
+rndc stats
 if [ -d "/var/log/bind" ]; then
     if [ "$(stat -c '%U' "/var/log/bind")" != "bind" ]; then
         chown -R bind:bind /var/log/bind
     fi
 fi
-rndc stats
-chown bind:bind /var/log/bind/bind.stats
+systemctl restart named > /dev/null 2>&1
 echo "Finished DNS log directory"
 echo "Bind9 Setup Finished"
 # Setup dnscrypt-proxy

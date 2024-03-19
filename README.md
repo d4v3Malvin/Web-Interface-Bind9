@@ -13,9 +13,9 @@ Bind9 RPZ monitor made with
 
 ## How to Install
 
-1. Run the script named startup.sh on the linux server (make sure you run it with sudo or as root)
+1. Update and Upgrade Linux Repo
+
+`sudo apt-get update -y && sudo apt-get upgrade -y`
+
+2. Run the script named startup.sh on the linux server (make sure you run it with sudo or as root)
 `./startup.sh`
-
-## Reset password to Default
-
-1. Run the script called Reset_password.sh and it will automatically change (Located on /home/webScript)
