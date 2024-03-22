@@ -6,6 +6,7 @@ repo_path=$(pwd)
 app=""
 
 if ! which named > /dev/null; then
+    add-apt-repository ppa:isc/bind-dev
     app+="bind9 "
 fi
 if ! which gnupg > /dev/null; then
