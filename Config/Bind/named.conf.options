@@ -6,6 +6,17 @@ acl "local-address" {
 	::1/128;
 };
 
+tls local-tls {
+ 	key-file "/var/cache/bind/ssl/bind-doh.key";
+ 	cert-file "/var/cache/bind/ssl/bind-doh.crt";
+};
+
+http local-http-server {
+	endpoints {
+		"/dns-query";
+	};
+};
+
 options {
 	directory "/var/cache/bind";
 
@@ -33,7 +44,12 @@ options {
 	//========================================================================
 	dnssec-validation no;
 
-	listen-on-v6 { any; };
+	listen-on port 53 { any; };
+	listen-on-v6 port 53 { any; };
+	https-port 8443;
+	listen-on port 8443 tls local-tls http local-http-server {any;};
+	listen-on-v6 port 8443 tls local-tls http local-http-server {any;};
+
 	response-policy { zone "ads.rpz.zone"; zone "blocked.rpz.zone"; };
 	
 	dump-file  "/var/log/bind/cache_dump.db";
