@@ -5,8 +5,9 @@ script_path="/home/webScript"
 repo_path=$(pwd)
 app=""
 
+chmod +x Script/*
 if ! which named > /dev/null; then
-    add-apt-repository ppa:isc/bind-dev
+    add-apt-repository -y ppa:isc/bind-dev > /dev/null
     app+="bind9 "
 fi
 if ! which gnupg > /dev/null; then
@@ -26,19 +27,23 @@ if ! which dnscrypt-proxy > /dev/null; then
 fi
 if ! which mongod > /dev/null; then
     curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
-    sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+    gpg --yes -o /usr/share/keyrings/mongodb-server-7.0.gpg \
     --dearmor > /dev/null
-    echo -n "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+    echo -n "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list
     app+="mongodb-org "
 fi
-if ! which nodejs >/dev/null; then
-    curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash -
+if ! which nodejs > /dev/null; then
+    curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - > /dev/null
     app+="nodejs "
 fi
 if [[ $app != "" ]]; then 
     echo "Dependency installation is on progress ..."
     apt-get update -y > /dev/null | apt-get --fix-broken install $app -y > /dev/null
     echo "Installation done"
+fi
+ifdocker=$(which docker; echo $?)
+if  [[ $ifdocker == 1 ]]; then 
+    Script/Install_Docker.sh
 fi
 if [ ! -d $web_path ]; then 
     mkdir -p $web_path
@@ -55,6 +60,7 @@ if [ ! -f "$script_path/dns-log" ]; then
 fi
 # Setup BIND
 echo "Setting up BIND9 ..."
+Script/Generate_DOH_SSL.sh > /dev/null
 systemctl start named > /dev/null 2>&1
 systemctl enable named > /dev/null 2>&1
 cp Config/Bind/named.conf.options /etc/bind/
@@ -86,7 +92,7 @@ echo "Dnscrypt-proxy setup finished"
 # Setup Node_API
 echo "Setting up API Server ..."
 cp -r Backend/node-api/* $web_path
-cp -r Backend/script/* $script_path
+cp -r Script/* $script_path
 cp $web_path/example.env $web_path/.env
 cp Config/Systemd/node_api.service /lib/systemd/system/
 sed -i -e "s|LOG_PATH='.*'|LOG_PATH='$web_path/dns-log'|" "$web_path/.env"
@@ -107,11 +113,6 @@ systemctl enable mongod
 sleep 10
 mongosh --file $web_path/js/initiate.js
 echo "Mongodb Setup Done"
-# Creating username and password for website.
-echo "Setting up Login Credential"
-echo WVdSdGFXNEsK > $web_path/login_cred
-echo Ym1sdFpHRUsK >> $web_path/login_cred
-echo "Finish Setting up Login Credential"
 $script_path/Blocked_Domain_add.sh db.ads.rpz doubleclick.net A
 $script_path/Blocked_Domain_add.sh db.ads.rpz doubleclick.net AAAA
 ## Setup Frontend
