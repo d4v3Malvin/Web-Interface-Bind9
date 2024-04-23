@@ -46,9 +46,9 @@ options {
 
 	listen-on port 53 { any; };
 	listen-on-v6 port 53 { any; };
-	https-port 8443;
-	listen-on port 8443 tls local-tls http local-http-server {any;};
-	listen-on-v6 port 8443 tls local-tls http local-http-server {any;};
+	https-port 443;
+	listen-on port 443 tls local-tls http local-http-server {any;};
+	listen-on-v6 port 443 tls local-tls http local-http-server {any;};
 
 	response-policy { zone "ads.rpz.zone"; zone "blocked.rpz.zone"; };
 	
