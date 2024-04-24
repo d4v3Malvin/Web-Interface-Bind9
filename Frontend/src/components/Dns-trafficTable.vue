@@ -41,7 +41,7 @@
                             </tr>
                         </thead>
                         <tbody v-if="datafilter().length > 0">
-                            <tr class="table-row" v-for="data in filteredPageData" :key="data">
+                            <tr class="table-row" v-for="data in this.tableData" :key="data">
                                 <td class="table-cell p-0.5 text-prety">{{ data.type }}</td>
                                 <td class="table-cell p-0.5 whitespace-pre-line break-words text-pretty">{{ data.domain }}</td>
                                 <td class="table-cell p-0.5 text-prety">{{ data.ip_source }}</td>
@@ -69,11 +69,11 @@
                 <div class="w-full flex justify-center py-4">
                     <button class="py-1 px-2 mx-1 border border-white text-white" @click="invokeFirst()" :disabled="currentpage === 1">First</button>
                     <button class="py-1 px-2 mx-1 border border-white text-white" @click="previouspage" :disabled="currentpage === 1">Previous</button>
-                    <div v-for="pagenumber in pageNumbers" :key="pagenumber">
-                        <button class="py-1 px-2 mx-1 border" :class="currentpage == pagenumber ? 'border-black bg-white text-black' : 'border-white text-white'" :hidden="pagenumber > totalpagefilter"  @click="jumppage(pagenumber)" >{{ pagenumber }}</button>
+                    <div v-for="pagenumber in array_pages" :key="pagenumber">
+                        <button class="py-1 px-2 mx-1 border" :class="currentpage == pagenumber ? 'border-black bg-white text-black' : 'border-white text-white'" :hidden="pagenumber > totalpages"  @click="jumppage(pagenumber)" >{{ pagenumber }}</button>
                     </div>
-                    <button class="py-1 px-2 mx-1 border border-white text-white" @click="nextpage" :disabled="currentpage >= totalpage">Next</button>
-                    <button class="py-1 px-2 mx-1 border border-white text-white" @click="invokeLast()" :disabled="currentpage >= this.totalpage">Last</button>
+                    <button class="py-1 px-2 mx-1 border border-white text-white" @click="nextpage" :disabled="currentpage >= totalpages">Next</button>
+                    <button class="py-1 px-2 mx-1 border border-white text-white" @click="invokeLast()" :disabled="currentpage >= this.totalpages">Last</button>
                 </div>
             </div>
             <div class="pt-2" v-else>
@@ -90,7 +90,6 @@
 
     let daterangeone
 
-    let max = 10
     let start = 1
 
     export default  {
@@ -109,12 +108,12 @@
                 searchQuery: '',
                 prevSearchQuery: '',
                 totalfilterdata: 0,
-                topsuccessdomain: [],
-                topblockeddomain: [],
                 datestart: '',
                 prevdatestart: '',
                 datefinish: '',
-                prevdatefinish: ''
+                prevdatefinish: '',
+                totalpages: 0,
+                array_pages: []
             }
         },
         computed: {
@@ -130,32 +129,11 @@
                 const end = start + this.totalitem
 
                 return this.datafilter().slice(start,end)
-            },
-            pageNumbers() {
-                let pagelist = []
-                let limit = max
-                let indexis = start
-
-                if (this.currentpage > limit){
-                    indexis+=10
-                    limit=indexis+9
-                }
-                else if (this.currentpage < indexis && this.currentpage > 1){
-                    indexis-=10
-                    limit=indexis+9
-                }
-
-                for (let i = indexis; i <= limit; i++){
-                    pagelist.push(i);
-                }
-
-                start = indexis
-                max = limit
-
-                return pagelist
             }
         },
         mounted() {
+            this.getdatacount()
+            this.calculaterangepage()
         },
         updated() {
             this.$nextTick(() => {
@@ -171,6 +149,11 @@
         watch: {
             selectedcat() {
                 this.invokeFirst()
+                this.getdata()
+            },
+            currentpage() {
+                this.calculaterangepage()
+                this.getdata()
             }
         },
         methods: {
@@ -180,13 +163,22 @@
                 this.tableData.reverse()
                 this.loading = false
             },
+            async getdata(){
+                let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-log/${this.currentpage}/${this.selectedcat}`)
+                this.tableData = response.data
+                this.loading = false
+            },
+            async getdatacount(){
+                let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-count`)
+                this.totalpages = Math.ceil(response.data.count / this.totalitem)
+            },
             async fetchData() {
                 try {
                     this.loading = true
-                    this.importdata()
+                    this.getdata()
                     setInterval(() => {
                         this.loading = true
-                        this.importdata()
+                        this.getdata()
                     }, 60000);
                      
                 } catch (error) {
@@ -194,8 +186,29 @@
                     console.error("There was an error fetching the data", error);
                 }
             },
+            calculaterangepage(){
+                let current_stop = start+(this.totalitem-1)
+                let start_change = false
+
+                if (this.currentpage > current_stop &&  this.currentpage - current_stop == 1){
+                    start = this.currentpage
+                    start_change = true
+                }
+                else if (this.currentpage < start && this.currentpage != 1){
+                    start = this.currentpage - (this.totalitem-1)
+                    start_change = true
+                }
+
+                if (start_change || start == 1) {
+                    this.array_pages = []
+
+                    for (let i = start; i<= start+9; i++){
+                        this.array_pages.push(i)
+                    }
+                }
+            },
             nextpage(){
-                if (this.currentpage < this.totalpagefilter){
+                if (this.currentpage < this.totalpages){
                     this.currentpage++
                 }
             },
@@ -265,20 +278,16 @@
             },
             invokeFirst(){
                 start = 1
-                max = this.totalitem
                 this.jumppage(1)
             },
             invokeLast(){
-                max = this.totalpagefilter
-                let a = 0
-                if (max % this.totalitem == 0){
-                    a = this.totalitem
+                start = this.totalpages - (this.totalpages % 10)
+                this.array_pages = []
+
+                for (let i = start; i<= start+9; i++){
+                    this.array_pages.push(i)
                 }
-                else{
-                    a = max % this.totalitem -1
-                }
-                start = max - a
-                this.jumppage(this.totalpagefilter)
+                this.jumppage(this.totalpages)
             },
             async refreshlist(){
                 try {

@@ -11,15 +11,39 @@ async function getAllLog(client,query){
     return cursor.toArray()
 }
 
+async function getallpage(client,page,query) {
+    const db = client.db("web-interface-bind9")
+    const log = db.collection("dns-log")
+    let cursor = null
+
+    skip = (page-1) * 10
+
+    if (query == "all"){
+        cursor = await log.aggregate([
+            { $sort: { date: -1, time: -1 } },
+            { $skip: Number(skip) },
+            { $limit: 10 }
+        ])
+    }
+    else{
+        cursor = await log.aggregate([
+            { $sort: { date: -1, time: -1 } },
+            { $skip: Number(skip) },
+            { $limit: 10 },
+            { $match : { type : query } }
+        ])
+    }
+
+    return cursor.toArray()
+}
+
 async function getCountAll(client) {
     const db = client.db("web-interface-bind9")
     const log = db.collection("dns-log")
 
-    if ((await log.countDocuments(query)) > 0){
-        return true
-    }
+    const count = await log.countDocuments({})
     
-    return false
+    return count
 }
 
 async function getEpochLog(client,type,time){
@@ -46,9 +70,9 @@ async function getEpochLog(client,type,time){
     let data = await getAllLog(client,type)
 
     let filtered = data.filter((row) => {
-        let date_array = row.date.split('/')
+        let date_array = row.date.split('-')
         let time_array = row.time.split(':')
-        let dateEpoch = new Date(date_array[2],date_array[1]-1,date_array[0],time_array[0],time_array[1],time_array[2]).getTime()
+        let dateEpoch = new Date(date_array[0],date_array[1]-1,date_array[2],time_array[0],time_array[1],time_array[2]).getTime()
 
         if (dateEpoch >= now_epoch){
             return row
@@ -64,6 +88,7 @@ async function getEpochLog(client,type,time){
 
 module.exports = {
     getAllLog: getAllLog,
+    getallpage: getallpage,
     getCountAll: getCountAll,
     getEpochLog: getEpochLog
 }

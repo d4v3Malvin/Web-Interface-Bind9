@@ -3,7 +3,7 @@ const { spawn, execSync, execFileSync } = require("child_process")
 const { MongoClient } = require("mongodb")
 const fs = require('fs')
 const { changeDateToIndo } = require('../Modules/change_date')
-const { getAllLog, getEpochLog } = require('../Modules/get_all')
+const { getAllLog, getEpochLog, getallpage, getCountAll } = require('../Modules/get_all')
 const e = require('express')
 const logpath = process.env.LOG_PATH
 const mongo_uri = 'mongodb://localhost:27017'
@@ -48,13 +48,31 @@ module.exports = function (app) {
         })
     })
 
-    app.get('/get-dns-log', async (req,res) => {
+    app.get('/get-dns-log/:page/:query', async (req,res) => {
         try {
             client.connect()
 
-            let data = await getAllLog(client,"all")
+            let data = await getallpage(client,req.params.page,req.params.query)
             
             res.json(data)
+        } catch (error) {
+            console.error(error)
+        } finally {
+            client.close()
+        }
+    })
+
+    app.get('/get-count', async (req,res) => {
+        try {
+            client.connect()
+
+            let data = await getCountAll(client)
+
+            let jumlah = {
+                count: data
+            }
+            
+            res.json(jumlah)
         } catch (error) {
             console.error(error)
         } finally {
@@ -93,6 +111,9 @@ module.exports = function (app) {
                     let datetimes = changeDateToIndo(date,time)
                     let dates = datetimes.split('T')
 
+                    let format_date = dates[0].split('/')
+                    let formatted_date = format_date[2] + "-" + format_date[1] + "-" + format_date[0]
+
                     let client_ip = array_values[6].split('#')[0].toString()
                     let query = ""
                     let record = ""
@@ -117,7 +138,7 @@ module.exports = function (app) {
             
                     let log = {
                         type: type,
-                        date: dates[0],
+                        date: formatted_date,
                         time: dates[1],
                         ip_source: client_ip,
                         domain: query,
