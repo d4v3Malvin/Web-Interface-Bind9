@@ -109,10 +109,6 @@ module.exports = function (app) {
                     let time = array_values[1].split('.')[0].toString()
 
                     let datetimes = changeDateToIndo(date,time)
-                    let dates = datetimes.split('T')
-
-                    let format_date = dates[0].split('/')
-                    let formatted_date = format_date[2] + "-" + format_date[1] + "-" + format_date[0]
 
                     let client_ip = array_values[6].split('#')[0].toString()
                     let query = ""
@@ -138,8 +134,7 @@ module.exports = function (app) {
             
                     let log = {
                         type: type,
-                        date: formatted_date,
-                        time: dates[1],
+                        date: new Date(datetimes),
                         ip_source: client_ip,
                         domain: query,
                         dns_type: record,

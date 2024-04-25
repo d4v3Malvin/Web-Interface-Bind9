@@ -16,22 +16,18 @@ async function getallpage(client,page,query) {
     const log = db.collection("dns-log")
     let cursor = null
 
-    skip = (page-1) * 10
+    let limit = 10
+    let sort = {
+        'date': -1, 
+        'time': -1
+    }
+    let skip = (page-1) * 10
 
     if (query == "all"){
-        cursor = await log.aggregate([
-            { $sort: { date: -1, time: -1 } },
-            { $skip: Number(skip) },
-            { $limit: 10 }
-        ])
+        cursor = await log.find({},{sort,skip,limit})
     }
     else{
-        cursor = await log.aggregate([
-            { $sort: { date: -1, time: -1 } },
-            { $skip: Number(skip) },
-            { $limit: 10 },
-            { $match : { type : query } }
-        ])
+        cursor = await log.find({type: query},{sort,skip,limit})
     }
 
     return cursor.toArray()

@@ -107,7 +107,6 @@
                 totalitem: 10,
                 searchQuery: '',
                 prevSearchQuery: '',
-                totalfilterdata: 0,
                 datestart: '',
                 prevdatestart: '',
                 datefinish: '',
@@ -144,6 +143,7 @@
             })
         },
         created() {
+            this.calculaterangepage()
             this.fetchData()
         },
         watch: {
@@ -293,7 +293,7 @@
                 try {
                     // Replace with your API endpoint
                     this.isrefresh = true
-                    this.importdata()
+                    this.getdata()
                     this.isrefresh = false
                 } catch (error) {
                     this.error = "Error fetching data";
@@ -340,10 +340,7 @@
                     alert("Input cant be empty")
                 }
             }
-        },
-        beforeUnmount() {
         }
-
     }
 </script>
 
