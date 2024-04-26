@@ -18,8 +18,7 @@ async function getallpage(client,page,query) {
 
     let limit = 10
     let sort = {
-        'date': -1, 
-        'time': -1
+        'date': -1
     }
     let skip = (page-1) * 10
 
@@ -33,11 +32,11 @@ async function getallpage(client,page,query) {
     return cursor.toArray()
 }
 
-async function getCountAll(client) {
+async function getCountAll(client,query) {
     const db = client.db("web-interface-bind9")
     const log = db.collection("dns-log")
 
-    const count = await log.countDocuments({})
+    const count = await log.countDocuments({type: query})
     
     return count
 }

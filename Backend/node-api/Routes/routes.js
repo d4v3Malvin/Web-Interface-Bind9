@@ -50,9 +50,12 @@ module.exports = function (app) {
 
     app.get('/get-dns-log/:page/:query', async (req,res) => {
         try {
+            const { search } = req.query
+            const { page, query } = req.params
+
             client.connect()
 
-            let data = await getallpage(client,req.params.page,req.params.query)
+            let data = await getallpage(client,page,query)
             
             res.json(data)
         } catch (error) {
@@ -62,11 +65,13 @@ module.exports = function (app) {
         }
     })
 
-    app.get('/get-count', async (req,res) => {
+    app.get('/get-count/:query', async (req,res) => {
         try {
             client.connect()
 
-            let data = await getCountAll(client)
+            const { query } = req.params
+
+            let data = await getCountAll(client,query)
 
             let jumlah = {
                 count: data

@@ -46,8 +46,8 @@
                                 <td class="table-cell p-0.5 whitespace-pre-line break-words text-pretty">{{ data.domain }}</td>
                                 <td class="table-cell p-0.5 text-prety">{{ data.ip_source }}</td>
                                 <td class="table-cell p-0.5 text-prety">{{ data.dns_type }}</td>
-                                <td class="table-cell p-0.5 text-prety">{{ data.date }}</td>
-                                <td class="table-cell p-0.5 text-prety">{{ data.time }}</td>
+                                <td class="table-cell p-0.5 text-prety">{{ getdate(data.date) }}</td>
+                                <td class="table-cell p-0.5 text-prety">{{ gettime(data.date) }}</td>
                                 <td class="table-cell p-0.5 whitespace-pre-line break-all text-prety">{{ data.note }}</td>
                                 <td class="table-cell py-0.5 text-xs ">
                                     <div class="flex flex-row justify-center">
@@ -85,6 +85,7 @@
 
 <script>
     import axios from 'axios'
+    import moment from 'moment'
     import Multiselect from '@vueform/multiselect'
     import { DateRangePicker } from 'vanillajs-datepicker'
 
@@ -131,8 +132,6 @@
             }
         },
         mounted() {
-            this.getdatacount()
-            this.calculaterangepage()
         },
         updated() {
             this.$nextTick(() => {
@@ -143,7 +142,6 @@
             })
         },
         created() {
-            this.calculaterangepage()
             this.fetchData()
         },
         watch: {
@@ -152,24 +150,18 @@
                 this.getdata()
             },
             currentpage() {
-                this.calculaterangepage()
                 this.getdata()
             }
         },
         methods: {
-            async importdata(){
-                let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-log`)
-                this.tableData = response.data
-                this.tableData.reverse()
-                this.loading = false
-            },
             async getdata(){
+                await this.calculaterangepage()
                 let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-log/${this.currentpage}/${this.selectedcat}`)
                 this.tableData = response.data
                 this.loading = false
             },
             async getdatacount(){
-                let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-count`)
+                let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-count/${this.selectedcat}`)
                 this.totalpages = Math.ceil(response.data.count / this.totalitem)
             },
             async fetchData() {
@@ -186,7 +178,14 @@
                     console.error("There was an error fetching the data", error);
                 }
             },
-            calculaterangepage(){
+            gettime(datetime){
+                return moment(datetime).format('LTS')
+            },
+            getdate(datetime){
+                return moment(datetime).format('ll')
+            },
+            async calculaterangepage(){
+                await this.getdatacount()
                 let current_stop = start+(this.totalitem-1)
                 let start_change = false
 
@@ -199,10 +198,15 @@
                     start_change = true
                 }
 
+                current_stop = start+(this.totalitem-1)
+
                 if (start_change || start == 1) {
+                    if (this.totalpages < current_stop){
+                        current_stop = this.totalpages
+                    }
                     this.array_pages = []
 
-                    for (let i = start; i<= start+9; i++){
+                    for (let i = start; i<= current_stop; i++){
                         this.array_pages.push(i)
                     }
                 }
