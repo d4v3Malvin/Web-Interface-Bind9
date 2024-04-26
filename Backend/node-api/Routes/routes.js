@@ -50,12 +50,12 @@ module.exports = function (app) {
 
     app.get('/get-dns-log/:page/:query', async (req,res) => {
         try {
-            const { search } = req.query
+            const { search, start, end } = req.query
             const { page, query } = req.params
 
             client.connect()
 
-            let data = await getallpage(client,page,query)
+            let data = await getallpage(client,page,query,search,start,end)
             
             res.json(data)
         } catch (error) {

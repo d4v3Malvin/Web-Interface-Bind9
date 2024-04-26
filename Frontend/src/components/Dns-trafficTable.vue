@@ -40,7 +40,7 @@
                                 <td class="table-cell w-1/12 py-0.5 text-prety">Add to Block</td>
                             </tr>
                         </thead>
-                        <tbody v-if="datafilter().length > 0">
+                        <tbody v-if="this.totalpages > 0">
                             <tr class="table-row" v-for="data in this.tableData" :key="data">
                                 <td class="table-cell p-0.5 text-prety">{{ data.type }}</td>
                                 <td class="table-cell p-0.5 whitespace-pre-line break-words text-pretty">{{ data.domain }}</td>
@@ -117,26 +117,13 @@
             }
         },
         computed: {
-            totalpage() {
-                return Math.ceil(this.tableData.length / this.totalitem)
-            },
-            totalpagefilter(){
-                return Math.ceil(this.datafilter().length / this.totalitem)
-            },
-            filteredPageData() {
-
-                const start = (this.currentpage - 1) * this.totalitem
-                const end = start + this.totalitem
-
-                return this.datafilter().slice(start,end)
-            }
         },
         mounted() {
         },
         updated() {
             this.$nextTick(() => {
                 if (document.getElementById('daterange')){
-                    daterangeone = new DateRangePicker(document.getElementById('daterange'),{format : 'dd/mm/yyyy'})
+                    daterangeone = new DateRangePicker(document.getElementById('daterange'))
                     daterangeone.setDates( this.datestart, this.datefinish )
                 }
             })
@@ -154,9 +141,20 @@
             }
         },
         methods: {
-            async getdata(){
+            async getdata(start1= undefined, end1= undefined){
                 await this.calculaterangepage()
-                let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-log/${this.currentpage}/${this.selectedcat}`)
+                const data = {search: this.searchQuery}
+                if (start1 && end1){
+                    data.start = moment(start1).toISOString()
+                    data.end = moment(end1).toISOString()
+                }
+                else if (daterangeone){
+                    let dates = daterangeone.getDates()
+                    data.start = moment(dates[0]).toISOString()
+                    data.end = moment(dates[1]).toISOString()
+                }
+                const params = new URLSearchParams(data)
+                let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-log/${this.currentpage}/${this.selectedcat}?${params.toString()}`)
                 this.tableData = response.data
                 this.loading = false
             },
@@ -231,12 +229,6 @@
                 if (this.searchQuery != this.prevSearchQuery) {
                     this.currentpage = 1
                     this.prevSearchQuery = this.searchQuery // Store the previous search query
-                }
-
-                if (this.datestart != this.prevdatestart || this.datefinish != this.prevdatefinish) {
-                    this.currentpage = 1
-                    this.prevdatestart = this.datestart
-                    this.prevdatefinish = this.datefinish
                 }
 
                 if (this.searchQuery.toString().trim().length == 0){
@@ -334,15 +326,14 @@
                 }
             },
             checkval(){
-                let dates = daterangeone.getDates('dd/mm/yyyy')
-                if (dates[0] && dates[1]){
-                    this.datestart = dates[0]
-                    this.datefinish = dates[1]
-                    this.refreshlist()
+
+                let dates = daterangeone.getDates()
+                if (moment(dates[0]).isValid() && moment(dates[1]).isValid()){
+                    this.getdata(dates[0],dates[1])
                 }
-                else{
-                    alert("Input cant be empty")
-                }
+                
+
+                // this.refreshlist()
             }
         }
     }

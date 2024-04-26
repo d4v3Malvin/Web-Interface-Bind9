@@ -1,3 +1,4 @@
+const moment = require('moment')
 async function getAllLog(client,query){
     const db = client.db("web-interface-bind9")
     const log = db.collection("dns-log")
@@ -11,23 +12,38 @@ async function getAllLog(client,query){
     return cursor.toArray()
 }
 
-async function getallpage(client,page,query) {
+async function getallpage(client,page,query,search,datestart,dateend) {
+    console.log(datestart,dateend)
     const db = client.db("web-interface-bind9")
     const log = db.collection("dns-log")
-    let cursor = null
 
     let limit = 10
     let sort = {
         'date': -1
     }
     let skip = (page-1) * 10
+    let querys = {}
 
-    if (query == "all"){
-        cursor = await log.find({},{sort,skip,limit})
+    if (String(search).length > 0){
+        querys["domain"] = new RegExp(search, 'i')
     }
-    else{
-        cursor = await log.find({type: query},{sort,skip,limit})
+
+    if (query != "all"){
+        querys["type"] = query
     }
+
+    let datequery = {
+        '$gte': moment(datestart).utcOffset(7).startOf('day').toDate(),
+        '$lte': moment(dateend).utcOffset(7).endOf('day').toDate()
+    }
+
+    if (String(datestart).length > 0 && String(dateend).length > 0){
+        querys["date"] = datequery
+    }
+
+    console.log(querys)
+
+    const cursor = await log.find(querys,{sort,skip,limit})
 
     return cursor.toArray()
 }
