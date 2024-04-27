@@ -91,7 +91,7 @@ systemctl restart dnscrypt-proxy
 echo "Dnscrypt-proxy setup finished"
 # Setup Node_API
 echo "Setting up API Server ..."
-cp -r Backend/node-api/* $web_path
+cp -r Backend/* $web_path
 cp -r Script/* $script_path
 cp $web_path/example.env $web_path/.env
 cp Config/Systemd/node_api.service /lib/systemd/system/

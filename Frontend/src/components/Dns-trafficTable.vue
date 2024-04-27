@@ -8,21 +8,22 @@
             <div class="flex-row w-full" v-if="!loading">
                 <div class="w-full flex justify-center">
                     <div class="w-4/5 h-min grid grid-cols-8 py-5">
-                        <div class="flex flex-col justify-center items-center col-span-2">
+                        <div class="flex flex-col justify-center items-center col-span-4">
                             <Multiselect class="w-full" v-model="selectedcat" :options="category" />
                         </div>
-                        <div class="flex flex-col justify-center items-center col-span-2">
-                            <input class="w-4/5 h-3/5 text-l" placeholder="Search" name="query" type="text" v-model="searchQuery">
+                        <div class="flex flex-col justify-center items-end col-span-4">
+                            <button @click="refreshlist()" class="h-3/4 w-3/4 bg-purple-200 rounded-md">Refresh</button>
                         </div>
-                        <div class="w-full flex flex-col justify-center items-center col-span-3">
+                        <div class="flex flex-col justify-center items-start col-span-3 mt-3">
+                            <input class="w-4/5 h-full text-l" placeholder="Search" name="query" type="text" v-model="searchQuery">
+                        </div>
+                        <div class="w-full flex flex-col justify-center items-center col-span-3 mt-3">
                             <div class="w-full" id="daterange">
-                                <input class="w-2/6 text-l" style="margin-right: calc(5%);" v-model="datestart" type="text" ref="datestart">
-                                <input class="w-2/6 text-l" v-model="datefinish" type="text" ref="datedone">
-                                <button @click="checkval()" style="margin-left: calc(5%);" class="w-1/6 bg-purple-200 rounded-md">Search</button> 
+                                <div class="w-5/6"><VueDatePicker v-model="date" range :enable-time-picker="false"/></div>
                             </div>
                         </div>
-                        <div class="flex flex-col justify-center items-center">
-                            <button @click="refreshlist()" class="h-3/4 w-3/4 bg-purple-200 rounded-md">Refresh</button>
+                        <div class="flex flex-col justify-center items-center col-span-2 mt-3">
+                            <button @click="checkval()" style="margin-left: calc(5%);" class="w-full h-full bg-purple-200 rounded-md">Search</button>
                         </div>
                     </div>
                 </div>
@@ -87,15 +88,15 @@
     import axios from 'axios'
     import moment from 'moment'
     import Multiselect from '@vueform/multiselect'
-    import { DateRangePicker } from 'vanillajs-datepicker'
+    import VueDatePicker from '@vuepic/vue-datepicker';
+    import '@vuepic/vue-datepicker/dist/main.css'
 
-    let daterangeone
-
-    let start = 1
+    let startpoint = 1
 
     export default  {
         components: {
             Multiselect,
+            VueDatePicker
         },
         data() {
             return {
@@ -108,25 +109,10 @@
                 totalitem: 10,
                 searchQuery: '',
                 prevSearchQuery: '',
-                datestart: '',
-                prevdatestart: '',
-                datefinish: '',
-                prevdatefinish: '',
+                date: null,
                 totalpages: 0,
                 array_pages: []
             }
-        },
-        computed: {
-        },
-        mounted() {
-        },
-        updated() {
-            this.$nextTick(() => {
-                if (document.getElementById('daterange')){
-                    daterangeone = new DateRangePicker(document.getElementById('daterange'))
-                    daterangeone.setDates( this.datestart, this.datefinish )
-                }
-            })
         },
         created() {
             this.fetchData()
@@ -141,25 +127,35 @@
             }
         },
         methods: {
-            async getdata(start1= undefined, end1= undefined){
-                await this.calculaterangepage()
+            async getdata(start= undefined, end= undefined){
+                await this.calculaterangepage(start,end)
                 const data = {search: this.searchQuery}
-                if (start1 && end1){
-                    data.start = moment(start1).toISOString()
-                    data.end = moment(end1).toISOString()
+                if (start && end){
+                    data.start = moment(start).toISOString()
+                    data.end = moment(end).toISOString()
                 }
-                else if (daterangeone){
-                    let dates = daterangeone.getDates()
-                    data.start = moment(dates[0]).toISOString()
-                    data.end = moment(dates[1]).toISOString()
+                else{
+                    data.start = ""
+                    data.end = ""
                 }
                 const params = new URLSearchParams(data)
                 let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-dns-log/${this.currentpage}/${this.selectedcat}?${params.toString()}`)
                 this.tableData = response.data
                 this.loading = false
             },
-            async getdatacount(){
-                let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-count/${this.selectedcat}`)
+            async getdatacount(start= undefined, end= undefined){
+                const data = {search: this.searchQuery}
+                if (start && end){
+                    data.start = moment(start).toISOString()
+                    data.end = moment(end).toISOString()
+                }
+                else{
+                    data.start = ""
+                    data.end = ""
+                }
+                const params = new URLSearchParams(data)
+                let response = await axios.get(`http://${process.env.VUE_APP_HOST_API}:3000/get-count/${this.selectedcat}?${params.toString()}`)
+                console.log(response.data.count)
                 this.totalpages = Math.ceil(response.data.count / this.totalitem)
             },
             async fetchData() {
@@ -182,29 +178,29 @@
             getdate(datetime){
                 return moment(datetime).format('ll')
             },
-            async calculaterangepage(){
-                await this.getdatacount()
-                let current_stop = start+(this.totalitem-1)
+            async calculaterangepage(start= undefined, end= undefined){
+                await this.getdatacount(start,end)
+                let current_stop = startpoint+(this.totalitem-1)
                 let start_change = false
 
                 if (this.currentpage > current_stop &&  this.currentpage - current_stop == 1){
-                    start = this.currentpage
+                    startpoint = this.currentpage
                     start_change = true
                 }
-                else if (this.currentpage < start && this.currentpage != 1){
-                    start = this.currentpage - (this.totalitem-1)
+                else if (this.currentpage < startpoint && this.currentpage != 1){
+                    startpoint = this.currentpage - (this.totalitem-1)
                     start_change = true
                 }
 
-                current_stop = start+(this.totalitem-1)
+                current_stop = startpoint+(this.totalitem-1)
 
-                if (start_change || start == 1) {
+                if (start_change || startpoint == 1) {
                     if (this.totalpages < current_stop){
                         current_stop = this.totalpages
                     }
                     this.array_pages = []
 
-                    for (let i = start; i<= current_stop; i++){
+                    for (let i = startpoint; i<= current_stop; i++){
                         this.array_pages.push(i)
                     }
                 }
@@ -222,65 +218,15 @@
             jumppage(pagenum){
                 this.currentpage = pagenum
             },
-            datafilter(){
-            
-                let pagedata;
-
-                if (this.searchQuery != this.prevSearchQuery) {
-                    this.currentpage = 1
-                    this.prevSearchQuery = this.searchQuery // Store the previous search query
-                }
-
-                if (this.searchQuery.toString().trim().length == 0){
-                    const filtered = this.tableData.filter((data) => {
-                        if (data.type == this.selectedcat){
-                            return data
-                        }
-                    })
-                    pagedata = filtered
-                }
-                else{
-                    const filtered = this.tableData.filter((data) => {
-                        if (data.type == this.selectedcat){
-                            return (
-                                data.type.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase()) ||
-                                data.domain.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase()) ||
-                                data.ip_source.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase()) ||
-                                data.dns_type.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase()) ||
-                                data.date.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase()) ||
-                                data.time.toString().toLowerCase().includes(this.searchQuery.toString().toLowerCase())
-                            );
-                        }
-                    });
-
-                    pagedata =  filtered
-                }
-
-                if (this.datestart.length > 0 && this.datefinish.length > 0){
-                    let date_min = this.datestart.split('/')
-                    let date_min_epoch = new Date(date_min[2],date_min[1],date_min[0]).getTime()
-                    let date_max = this.datefinish.split('/')
-                    let date_max_epoch = new Date(date_max[2],date_max[1],date_max[0]).getTime()
-                    pagedata = pagedata.filter((data) => {
-                        let date_array = data.date.split('/')
-                        let data_epoch = new Date(date_array[2],date_array[1],date_array[0]).getTime()
-                        if (data_epoch >= date_min_epoch && data_epoch <= date_max_epoch){
-                            return data
-                        }
-                    })
-                }
-                
-                return pagedata
-            },
             invokeFirst(){
-                start = 1
+                startpoint = 1
                 this.jumppage(1)
             },
             invokeLast(){
-                start = this.totalpages - (this.totalpages % 10)
+                startpoint = this.totalpages - (this.totalpages % 10)
                 this.array_pages = []
 
-                for (let i = start; i<= start+9; i++){
+                for (let i = startpoint; i<= startpoint+(this.totalitem - 1); i++){
                     this.array_pages.push(i)
                 }
                 this.jumppage(this.totalpages)
@@ -326,14 +272,14 @@
                 }
             },
             checkval(){
-
-                let dates = daterangeone.getDates()
-                if (moment(dates[0]).isValid() && moment(dates[1]).isValid()){
-                    this.getdata(dates[0],dates[1])
+                if (this.date !== null){
+                    if (moment(this.date[0]).isValid() && moment(this.date[1]).isValid()){
+                        this.getdata(this.date[0],this.date[1])
+                    }
                 }
-                
-
-                // this.refreshlist()
+                else{
+                    this.getdata()
+                }
             }
         }
     }

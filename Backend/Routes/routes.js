@@ -69,9 +69,10 @@ module.exports = function (app) {
         try {
             client.connect()
 
+            const { search, start, end } = req.query
             const { query } = req.params
 
-            let data = await getCountAll(client,query)
+            let data = await getCountAll(client,query,search,start,end)
 
             let jumlah = {
                 count: data

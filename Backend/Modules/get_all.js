@@ -48,11 +48,28 @@ async function getallpage(client,page,query,search,datestart,dateend) {
     return cursor.toArray()
 }
 
-async function getCountAll(client,query) {
+async function getCountAll(client,query,search,start,end) {
     const db = client.db("web-interface-bind9")
     const log = db.collection("dns-log")
 
-    const count = await log.countDocuments({type: query})
+    let querylist = {
+        type: query
+    }
+
+    if (String(search).length > 0){
+        querylist["domain"] = new RegExp(search, 'i')
+    }
+
+    let datequery = {
+        '$gte': moment(start).utcOffset(7).startOf('day').toDate(),
+        '$lte': moment(end).utcOffset(7).endOf('day').toDate()
+    }
+
+    if (String(start).length > 0 && String(end).length > 0){
+        querylist["date"] = datequery
+    }
+
+    const count = await log.countDocuments(querylist)
     
     return count
 }
