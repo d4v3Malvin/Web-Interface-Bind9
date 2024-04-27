@@ -1,13 +1,14 @@
 require('dotenv').config()
+const moment = require('moment')
 const { spawn, execSync, execFileSync } = require("child_process")
 const { MongoClient } = require("mongodb")
 const fs = require('fs')
 const { changeDateToIndo } = require('../Modules/change_date')
-const { getAllLog, getEpochLog, getallpage, getCountAll } = require('../Modules/get_all')
+const { getAllLog, getEpochLog, getallpage, getCountAll, gettendomain } = require('../Modules/get_all')
 const e = require('express')
-const logpath = process.env.LOG_PATH
-const mongo_uri = 'mongodb://localhost:27017'
 const StringDecoder = require('string_decoder').StringDecoder
+
+const mongo_uri = 'mongodb://localhost:27017'
 
 const client = new MongoClient(mongo_uri);
 
@@ -193,34 +194,60 @@ module.exports = function (app) {
 
     app.get('/get-top-query/:type/:time', async (req,res) => {
 
-        const time = req.params.time
-        const type = req.params.type
+        const { time, type } = req.params
 
         try {
             client.connect()
 
-            let filtered = await getEpochLog(client,type,time)
+            let firstdate = null
+            let seconddate = moment(new Date())
 
-            let unique = [] 
+            if (time == "60m"){
+                firstdate = moment(new Date()).subtract(1, 'hours').format()
+            }
+            else if (time == "1d"){
+                firstdate = moment(new Date()).subtract(1, 'days').format()
+            }
+            else if (time == "1m"){
+                firstdate = moment(new Date()).subtract(1, 'months').format()
+            }
+            else if (time == "1y"){
+                firstdate = moment(new Date()).subtract(1, 'years').format()
+            }
 
-            filtered.forEach(data => {         
-                if (!unique.includes(data.domain)){
-                    unique.push((data.domain))
-                }      
-            });
+            let domaincount = []
 
-            let count_collection = []
-
-            unique.forEach(data => {
-                let count = filtered.filter(row => row.domain == data).length
-                let count_item = {
-                    domain: data,
-                    count: count
+            let datas = await gettendomain(client,type,firstdate,seconddate)  
+            datas.map((data) => {
+                let domain = {
+                    domain: data._id.domain,
+                    count: data.count
                 }
-                count_collection.push(count_item)
-            })
+                domaincount.push(domain)
+            }) 
+
+            res.json(domaincount)
+
+            // let unique = [] 
+
+            // filtered.forEach(data => {         
+            //     if (!unique.includes(data.domain)){
+            //         unique.push((data.domain))
+            //     }      
+            // });
+
+            // let count_collection = []
+
+            // unique.forEach(data => {
+            //     let count = filtered.filter(row => row.domain == data).length
+            //     let count_item = {
+            //         domain: data,
+            //         count: count
+            //     }
+            //     count_collection.push(count_item)
+            // })
             
-            res.json(count_collection.sort((a,b) => b.count - a.count).slice(0,10))
+            // res.json(count_collection.sort((a,b) => b.count - a.count).slice(0,10))
             
         } catch (error) {
             console.error(error)

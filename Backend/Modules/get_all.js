@@ -1,7 +1,13 @@
 const moment = require('moment')
-async function getAllLog(client,query){
+
+function initiatedb(client){
     const db = client.db("web-interface-bind9")
     const log = db.collection("dns-log")
+    return log
+}
+
+async function getAllLog(client,query){
+    const log = initiatedb(client)
     let cursor = null
     if (query == "all"){
         cursor = await log.find()
@@ -13,9 +19,7 @@ async function getAllLog(client,query){
 }
 
 async function getallpage(client,page,query,search,datestart,dateend) {
-    console.log(datestart,dateend)
-    const db = client.db("web-interface-bind9")
-    const log = db.collection("dns-log")
+    const log = initiatedb(client)
 
     let limit = 10
     let sort = {
@@ -49,8 +53,7 @@ async function getallpage(client,page,query,search,datestart,dateend) {
 }
 
 async function getCountAll(client,query,search,start,end) {
-    const db = client.db("web-interface-bind9")
-    const log = db.collection("dns-log")
+    const log = initiatedb(client)
 
     let querylist = {
         type: query
@@ -72,6 +75,49 @@ async function getCountAll(client,query,search,start,end) {
     const count = await log.countDocuments(querylist)
     
     return count
+}
+
+async function gettendomain(client,type,start = undefined,end = undefined){
+    const log = initiatedb(client)
+
+    const arg = [
+        {
+            '$match': {},
+        },
+        {
+            '$group': {
+                '_id': {
+                    'domain': '$domain'
+                }, 
+                'count': {
+                    '$count': {}
+                }
+            }
+        },
+        {
+            '$sort': {
+                'count': -1
+            }
+        }, 
+        {
+            '$limit': 10
+        }
+    ]
+
+    if (type != "all"){
+        arg[0]['$match']['type'] = type
+    }
+
+    if (start && end){
+        arg[0]['$match']['date'] = {
+            '$gte': moment(start).utcOffset(7).toDate(), 
+            '$lte': moment(end).utcOffset(7).toDate()
+        }
+    }
+    
+    const cursor = log.aggregate(arg)
+
+    return cursor.toArray()
 }
 
 async function getEpochLog(client,type,time){
@@ -118,5 +164,6 @@ module.exports = {
     getAllLog: getAllLog,
     getallpage: getallpage,
     getCountAll: getCountAll,
+    gettendomain: gettendomain,
     getEpochLog: getEpochLog
 }

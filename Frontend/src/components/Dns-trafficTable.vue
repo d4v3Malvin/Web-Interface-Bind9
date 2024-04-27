@@ -12,10 +12,10 @@
                             <Multiselect class="w-full" v-model="selectedcat" :options="category" />
                         </div>
                         <div class="flex flex-col justify-center items-end col-span-4">
-                            <button @click="refreshlist()" class="h-3/4 w-3/4 bg-purple-200 rounded-md">Refresh</button>
+                            <button @click="refreshlist()" class="h-full w-3/4 bg-purple-200 rounded-md">Refresh</button>
                         </div>
                         <div class="flex flex-col justify-center items-start col-span-3 mt-3">
-                            <input class="w-4/5 h-full text-l" placeholder="Search" name="query" type="text" v-model="searchQuery">
+                            <input class="w-4/5 h-full text-l rounded-md" placeholder="Domain Search" name="query" type="text" v-model="searchQuery">
                         </div>
                         <div class="w-full flex flex-col justify-center items-center col-span-3 mt-3">
                             <div class="w-full" id="daterange">
@@ -286,4 +286,3 @@
 </script>
 
 <style src="@vueform/multiselect/themes/default.css"></style>
-<style src="vanillajs-datepicker/css/datepicker-foundation.css"></style>
