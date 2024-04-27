@@ -93,7 +93,7 @@
                         data: {
                             labels: data.map(row => row.ip),
                             datasets: [{
-                                label: 'List of Client iP',
+                                label: 'Client Request',
                                 data: data.map(row => row.count),
                                 backgroundColor: [
                                     'rgba(201, 203, 207, 0.8)',

@@ -4,7 +4,7 @@ const { spawn, execSync, execFileSync } = require("child_process")
 const { MongoClient } = require("mongodb")
 const fs = require('fs')
 const { changeDateToIndo } = require('../Modules/change_date')
-const { getAllLog, getEpochLog, getallpage, getCountAll, gettendomain } = require('../Modules/get_all')
+const { getAllLog, getEpochLog, getallpage, getCountAll, gettendomain, gettenclient } = require('../Modules/get_all')
 const e = require('express')
 const StringDecoder = require('string_decoder').StringDecoder
 
@@ -227,27 +227,6 @@ module.exports = function (app) {
             }) 
 
             res.json(domaincount)
-
-            // let unique = [] 
-
-            // filtered.forEach(data => {         
-            //     if (!unique.includes(data.domain)){
-            //         unique.push((data.domain))
-            //     }      
-            // });
-
-            // let count_collection = []
-
-            // unique.forEach(data => {
-            //     let count = filtered.filter(row => row.domain == data).length
-            //     let count_item = {
-            //         domain: data,
-            //         count: count
-            //     }
-            //     count_collection.push(count_item)
-            // })
-            
-            // res.json(count_collection.sort((a,b) => b.count - a.count).slice(0,10))
             
         } catch (error) {
             console.error(error)
@@ -262,29 +241,35 @@ module.exports = function (app) {
         try {
             client.connect()
 
-            let filtered = await getEpochLog(client,"all",time)
+            let firstdate = null
+            let seconddate = moment(new Date())
 
-            let unique = [] 
+            if (time == "60m"){
+                firstdate = moment(new Date()).subtract(1, 'hours').format()
+            }
+            else if (time == "1d"){
+                firstdate = moment(new Date()).subtract(1, 'days').format()
+            }
+            else if (time == "1m"){
+                firstdate = moment(new Date()).subtract(1, 'months').format()
+            }
+            else if (time == "1y"){
+                firstdate = moment(new Date()).subtract(1, 'years').format()
+            }
 
-            filtered.forEach(data => {         
-                if (!unique.includes(data.ip_source)){
-                    unique.push(data.ip_source)
-                }      
-            });
+            let clientcount = []
 
-            let count_collection = []
-
-            unique.forEach(data => {
-                let count = filtered.filter(row => row.ip_source == data).length
-                let count_item = {
-                    ip: data,
-                    count: count
+            let datas = await gettenclient(client,firstdate,seconddate)
+            datas.map((data) => {
+                let ips = {
+                    ip: data._id.ip_client,
+                    count: data.count
                 }
-                count_collection.push(count_item)
-            })
-            
-            res.json(count_collection.sort((a,b) => b.count - a.count).slice(0,10))
-            
+                clientcount.push(ips)
+            }) 
+
+            res.json(clientcount)
+             
         } catch (error) {
             console.error(error)
         } finally {

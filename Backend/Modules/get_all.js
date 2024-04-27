@@ -120,44 +120,43 @@ async function gettendomain(client,type,start = undefined,end = undefined){
     return cursor.toArray()
 }
 
-async function getEpochLog(client,type,time){
-    let now_epoch = Date.now()
+async function gettenclient(client,start = undefined,end = undefined){
+    const log = initiatedb(client)
 
-    const hour = 1000 * 360
-    const day = hour * 24
-    const month = day * 30
-    const year = day * 365
-
-    if (time == "60m"){
-        now_epoch -= hour
-    }
-    else if (time == "1d"){
-        now_epoch -= day
-    }
-    else if (time == "1m"){
-        now_epoch -= month
-    }
-    else if (time == "1y"){
-        now_epoch -= year
-    }
-
-    let data = await getAllLog(client,type)
-
-    let filtered = data.filter((row) => {
-        let date_array = row.date.split('-')
-        let time_array = row.time.split(':')
-        let dateEpoch = new Date(date_array[0],date_array[1]-1,date_array[2],time_array[0],time_array[1],time_array[2]).getTime()
-
-        if (dateEpoch >= now_epoch){
-            return row
+    const arg = [
+        {
+            '$match': {},
+        },
+        {
+            '$group': {
+                '_id': {
+                    'ip_client': '$ip_source'
+                }, 
+                'count': {
+                    '$count': {}
+                }
+            }
+        },
+        {
+            '$sort': {
+                'count': -1
+            }
+        }, 
+        {
+            '$limit': 10
         }
-    })
+    ]
 
-    if (time == "all"){
-        filtered = data
+    if (start && end){
+        arg[0]['$match']['date'] = {
+            '$gte': moment(start).utcOffset(7).toDate(), 
+            '$lte': moment(end).utcOffset(7).toDate()
+        }
     }
+    
+    const cursor = log.aggregate(arg)
 
-    return filtered
+    return cursor.toArray()
 }
 
 module.exports = {
@@ -165,5 +164,5 @@ module.exports = {
     getallpage: getallpage,
     getCountAll: getCountAll,
     gettendomain: gettendomain,
-    getEpochLog: getEpochLog
+    gettenclient: gettenclient
 }
