@@ -41,10 +41,6 @@ if [[ $app != "" ]]; then
     apt-get update -y > /dev/null | apt-get --fix-broken install $app -y > /dev/null
     echo "Installation done"
 fi
-ifdocker=$(which docker; echo $?)
-if  [[ $ifdocker == 1 ]]; then 
-    Script/Install_Docker.sh
-fi
 if [ ! -d $web_path ]; then 
     mkdir -p $web_path
 else
