@@ -25,19 +25,7 @@ function changeDatetimeUtc7(date,time){
 
     date_construct.setUTCHours(time_part[0],time_part[1],time_part[2])
 
-    let datetime = date_construct.toLocaleDateString('ID',{
-        timeZone: 'Asia/Jakarta',
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-    })
-
-    let datetime_array = datetime.split(',')
-
-    let time_array = datetime_array[1].trim().split('.')
-
-    return datetime_array[0] + "T" + time_array[0] + ":" + time_array[1] + ":" + time_array[2]
+    return date_construct
 }
 
 module.exports = {
